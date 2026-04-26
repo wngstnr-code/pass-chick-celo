@@ -5933,7 +5933,7 @@ canvas.game {
   display: none;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 850px) and (orientation: portrait) {
   :root {
     --play-mobile-edge-gutter: 8px;
     --play-mobile-top-action-width: 92px;
@@ -6335,4 +6335,33 @@ canvas.game {
     min-height: 68px;
     font-size: 10px;
   }
+}
+
+/* ============================================================
+   IPAD & TABLET PORTRAIT HUD (Variables Override)
+============================================================ */
+@media (min-width: 481px) and (max-width: 850px) and (orientation: portrait) {
+  :root {
+    --play-mobile-edge-gutter: 16px;
+    --play-mobile-top-action-width: 160px;
+    --play-mobile-right-action-width: 140px;
+    --play-mobile-header-height: 44px;
+    --play-mobile-menu-size: 56px;
+    --play-mobile-side-gap: 16px;
+  }
+  
+  .play-wallet-trigger { font-size: 10px; }
+  .play-menu-trigger-label { font-size: 10px; }
+  .hamburger-icon { width: 20px; gap: 3px; }
+  .play-nav-deposit { font-size: 10px; min-height: 40px; }
+  .play-status-mobile-kicker { font-size: 10px; }
+  .play-status-mobile-label { font-size: 10px; }
+  
+  #top-bar-center > .stat-card:not(.timer-card) { width: 180px; }
+  #timer-card { width: 100px; }
+  #bet-btn { font-size: 14px; min-height: 80px; }
+  
+  .score-metric { transform: scale(1.2); transform-origin: left center; }
+  .bet-hud-metric-label { font-size: 8px; }
+  .bet-hud-metric-value { font-size: 16px; }
 }
