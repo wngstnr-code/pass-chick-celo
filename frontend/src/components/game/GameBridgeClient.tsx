@@ -26,6 +26,9 @@ import {
   GAME_VAULT_ADDRESS,
   TRUST_PASSPORT_ABI,
   TRUST_PASSPORT_ADDRESS,
+  FIXED_GAME_STAKE_DISPLAY,
+  FIXED_GAME_STAKE_NUMBER,
+  FIXED_GAME_STAKE_UNITS,
   USDC_ADDRESS,
   USDC_DECIMALS,
   USDC_FAUCET_ABI,
@@ -344,6 +347,15 @@ function isLikelyNetworkIssue(error: unknown) {
 
 function toNumberAmount(value: bigint) {
   return Number(formatUnits(value, USDC_DECIMALS));
+}
+
+function formatUsdcDisplayAmount(value: number) {
+  if (!Number.isFinite(value)) return "0.00";
+  const absolute = Math.abs(value);
+  if (absolute > 0 && absolute < 0.01) {
+    return value.toFixed(4);
+  }
+  return value.toFixed(2);
 }
 
 function rejectPendingRequest<T>(
@@ -1803,8 +1815,9 @@ export function GameBridgeClient({
           signatureExpiry: Number(issued.signatureExpiry || 0),
         };
       },
-      startBet: async (stake: number) => {
+      startBet: async (_stake: number) => {
         const playerAddress = await requireReadyGameWallet();
+        const stake = FIXED_GAME_STAKE_NUMBER;
 
         // --- AUTO SETTLE CHECK ---
         try {
@@ -1825,7 +1838,7 @@ export function GameBridgeClient({
           );
         }
 
-        const stakeAmountUnits = parseUnits(String(stake), USDC_DECIMALS);
+        const stakeAmountUnits = FIXED_GAME_STAKE_UNITS;
         const [availableBalanceUnits, blocker] = await Promise.all([
           readContract(wagmiConfig, {
             address: GAME_VAULT_ADDRESS as Address,
@@ -1838,7 +1851,7 @@ export function GameBridgeClient({
 
         if (availableBalanceUnits < stakeAmountUnits) {
           throw new Error(
-            `Insufficient available vault balance. Available ${toNumberAmount(availableBalanceUnits).toFixed(2)} USDC, required ${stake.toFixed(2)} USDC.`,
+            `Insufficient available vault balance. Available ${formatUsdcDisplayAmount(toNumberAmount(availableBalanceUnits))} USDC, required ${FIXED_GAME_STAKE_DISPLAY} USDC.`,
           );
         }
 

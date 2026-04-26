@@ -1,6 +1,9 @@
 import { isAddress } from "viem";
 
 export const USDC_DECIMALS = 6;
+export const FIXED_GAME_STAKE_UNITS = 100n;
+export const FIXED_GAME_STAKE_NUMBER = 0.0001;
+export const FIXED_GAME_STAKE_DISPLAY = "0.0001";
 
 export const USDC_ADDRESS: string = process.env.NEXT_PUBLIC_USDC_ADDRESS || "";
 export const USDC_FAUCET_ADDRESS: string =

@@ -6,7 +6,7 @@ const tilesPerRow = maxTileIndex - minTileIndex + 1;
 const tileSize = 42;
 
 // ============================================================
-// BETTING SYSTEM (mock, in-memory + localStorage — Testnet Demo only)
+// BETTING SYSTEM
 // ============================================================
 
 const STEP_INCREMENT_BP = 250; // +0.025x per forward step
@@ -18,6 +18,7 @@ const CP_MAX_STAY_MS = 60 * 1000; // auto-exit CP after 60s
 const DECAY_BP_PER_SEC = 1000; // -0.1x per second = -1000 bp/s
 const SPEED_MULT_PER_CP = 1.1; // vehicle speed × 1.3 per CP
 const MAX_MOVE_QUEUE = 8;
+const FIXED_STAKE = 0.0001;
 
 const bet = {
   balance: 0,
@@ -292,12 +293,25 @@ async function loadBalance() {
 
 function saveBalance() {
   if (hasLiveBridge()) return;
-  localStorage.setItem("chickenBetBalance", bet.balance.toFixed(2));
+  localStorage.setItem("chickenBetBalance", bet.balance.toFixed(6));
+}
+
+function formatUsdAmount(amount) {
+  const value = Number(amount || 0);
+  const absolute = Math.abs(value);
+  const decimals = absolute > 0 && absolute < 0.01 ? 4 : 2;
+  return "$" + value.toFixed(decimals);
+}
+
+function formatSignedUsdAmount(amount) {
+  const value = Number(amount || 0);
+  const sign = value < 0 ? "-" : "";
+  return `${sign}${formatUsdAmount(Math.abs(value))}`;
 }
 
 function renderBalance() {
   const el = document.getElementById("balance");
-  if (el) el.innerText = "$" + bet.balance.toFixed(2);
+  if (el) el.innerText = formatUsdAmount(bet.balance);
 }
 
 function dispatchPlayStatus({
@@ -322,9 +336,9 @@ function syncLiveBetStatus() {
 
   const mult = bet.multiplierBp / 10000;
   const payout = bet.stake * mult;
-  const message = `LIVE BET $${bet.stake.toFixed(2)} • ${mult.toFixed(
+  const message = `LIVE RUN ${formatUsdAmount(bet.stake)} • ${mult.toFixed(
     2,
-  )}x • $${payout.toFixed(2)} • CP ${bet.currentCp}`;
+  )}x • ${formatUsdAmount(payout)} • CP ${bet.currentCp}`;
 
   if (message === lastLiveBetStatusMessage) return;
   lastLiveBetStatusMessage = message;
@@ -455,14 +469,14 @@ function setBetButtonState() {
   }
 
   if (bet.active) {
-    betBtn.innerText = "BET LIVE";
+    betBtn.innerText = "RUN LIVE";
     betBtn.classList.add("active");
     betBtn.classList.remove("busy");
     betBtn.disabled = false;
     return;
   }
 
-  betBtn.innerText = "BET";
+  betBtn.innerText = "START RUN";
   betBtn.classList.remove("active");
   betBtn.classList.remove("busy");
   betBtn.disabled = false;
@@ -549,12 +563,12 @@ function getCurrentEffectiveMultiplierBp(now = Date.now()) {
 }
 
 async function startBet(stake) {
-  if (!isFinite(stake) || stake <= 0) return false;
+  const effectiveStake = FIXED_STAKE;
 
   if (hasLiveBridge()) {
     try {
-      const result = await getBridge().startBet(stake);
-      return activateBet(stake, result.availableBalance);
+      const result = await getBridge().startBet(effectiveStake);
+      return activateBet(effectiveStake, result.availableBalance);
     } catch (error) {
       const message = formatBridgeError(
         error,
@@ -570,12 +584,12 @@ async function startBet(stake) {
     }
   }
 
-  if (stake > bet.balance) return false;
+  if (effectiveStake > bet.balance) return false;
 
-  bet.balance -= stake;
+  bet.balance -= effectiveStake;
   saveBalance();
   renderBalance();
-  return activateBet(stake, bet.balance);
+  return activateBet(effectiveStake, bet.balance);
 }
 
 function onPlayerAdvance(newRowIndex) {
@@ -904,9 +918,9 @@ function renderBetHud() {
   bet.multiplierBp = effectiveMultiplierBp;
   bet.isDecaying = isDecayActive;
 
-  if (stakeEl) stakeEl.innerText = "$" + bet.stake.toFixed(2);
+  if (stakeEl) stakeEl.innerText = formatUsdAmount(bet.stake);
   if (multEl) multEl.innerText = mult.toFixed(2) + "x";
-  if (payEl) payEl.innerText = "$" + payout.toFixed(2);
+  if (payEl) payEl.innerText = formatUsdAmount(payout);
   if (scoreCpEl) scoreCpEl.innerText = String(bet.currentCp);
 
   if (headKickerEl) {
@@ -1098,8 +1112,8 @@ function showResult(data) {
       <p>Checkpoint: <strong>${data.cp}</strong></p>
       <p>Hops survived: <strong>${data.rows}</strong></p>
       <p>Multiplier: <strong>${data.multiplier.toFixed(2)}x</strong></p>
-      <p>Payout: <strong>$${data.payout.toFixed(2)}</strong></p>
-      <p class="${profitClass}">Profit: ${profitSign}$${Math.abs(data.profit).toFixed(2)}</p>
+      <p>Payout: <strong>${formatUsdAmount(data.payout)}</strong></p>
+      <p class="${profitClass}">Profit: ${profitSign}${formatUsdAmount(Math.abs(data.profit))}</p>
     `;
   } else if (data.type === "crash") {
     if (shouldPlaySfx) playCrashSfx();
@@ -1109,7 +1123,7 @@ function showResult(data) {
       <p>Last checkpoint: <strong>${data.cp}</strong></p>
       <p>Hops survived: <strong>${data.rows}</strong></p>
       <p>Last multiplier: <strong>${data.multiplier.toFixed(2)}x</strong></p>
-      <p class="profit-negative">Lost: -$${data.stake.toFixed(2)}</p>
+      <p class="profit-negative">Lost: -${formatUsdAmount(data.stake)}</p>
     `;
   } else {
     if (shouldPlaySfx) playCrashSfx();
@@ -2442,7 +2456,7 @@ function initBettingUI() {
 
   function formatDepositAmount(value, fallback = "-") {
     if (!isFinite(value)) return fallback;
-    return "$" + Number(value).toFixed(2);
+    return formatUsdAmount(Number(value));
   }
 
   function shortWalletAddress(address) {
@@ -2480,9 +2494,9 @@ function initBettingUI() {
 
   function formatStatsUsd(value, { signed = false } = {}) {
     const amount = toFiniteNumber(value, 0);
-    if (!signed) return "$" + amount.toFixed(2);
+    if (!signed) return formatUsdAmount(amount);
     const sign = amount > 0 ? "+" : amount < 0 ? "-" : "";
-    return `${sign}$${Math.abs(amount).toFixed(2)}`;
+    return `${sign}${formatUsdAmount(Math.abs(amount))}`;
   }
 
   function formatStatsDate(value, fallback = "-") {
@@ -2576,7 +2590,7 @@ function initBettingUI() {
     if (normalized === "TREASURY_FUNDED")
       return { label: "FAUCET", className: "deposit" };
     if (normalized === "SESSION_STARTED")
-      return { label: "BET", className: "start" };
+      return { label: "RUN", className: "start" };
     if (normalized === "SESSION_SETTLED")
       return { label: "SETTLED", className: "settle" };
     return { label: normalized || "EVENT", className: "other" };
@@ -3336,13 +3350,6 @@ function initBettingUI() {
     });
   });
 
-  const stakeInput = document.getElementById("stake-input");
-  document.querySelectorAll("[data-amount]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      if (stakeInput) stakeInput.value = btn.dataset.amount;
-    });
-  });
-
   function showErrorToast(msg) {
     const panel = document.getElementById("bet-panel");
     if (!panel) return;
@@ -3371,16 +3378,10 @@ function initBettingUI() {
   const startBetBtn = document.getElementById("start-bet-btn");
   startBetBtn?.addEventListener("click", async () => {
     if (startBetBusy) return;
-    const stake = parseFloat(stakeInput?.value || "0");
-    if (!isFinite(stake) || stake <= 0) {
-      showErrorToast("Enter a valid stake amount");
-      return;
-    }
+    const stake = FIXED_STAKE;
     if (!hasLiveBridge() && stake > bet.balance) {
       showErrorToast(
-        `Insufficient balance. You have $${bet.balance.toFixed(
-          2,
-        )}. Deposit more first.`,
+        `Insufficient balance. You have ${formatUsdAmount(bet.balance)}. Deposit more first.`,
       );
       return;
     }
@@ -3392,9 +3393,7 @@ function initBettingUI() {
           const available = await bridge.loadAvailableBalance();
           if (!isFinite(available) || available < stake) {
             showErrorToast(
-              `Insufficient vault balance. Available $${(available || 0).toFixed(
-                2,
-              )}. Deposit first.`,
+              `Insufficient vault balance. Available ${formatUsdAmount(available || 0)}. Deposit first.`,
             );
             return;
           }
@@ -3419,7 +3418,7 @@ function initBettingUI() {
     startBetBusy = true;
     let keepStatusMessage = false;
     dispatchPlayStatus({
-      message: "STARTING BET...",
+      message: "STARTING RUN...",
       tone: "busy",
       sticky: true,
     });
@@ -3438,7 +3437,7 @@ function initBettingUI() {
     } finally {
       startBetBusy = false;
       if (startBetBtn) {
-        startBetBtn.innerText = "START BET";
+        startBetBtn.innerText = "START 0.0001 USDC RUN";
         startBetBtn.disabled = false;
       }
       if (!bet.active && !keepStatusMessage) {

@@ -75,7 +75,7 @@ export function GameCanvas({ backgroundMode = false }: GameCanvasProps) {
             </div>
 
             <div id="bet-hud-idle" className="bet-hud-idle">
-              Start a bet to see live payout and multiplier.
+              Start a paid run to see live payout and multiplier.
             </div>
 
             <button
@@ -102,7 +102,7 @@ export function GameCanvas({ backgroundMode = false }: GameCanvasProps) {
               1:00
             </div>
           </div>
-          <button id="bet-btn">BET</button>
+          <button id="bet-btn">START RUN</button>
         </div>
       </div>
 
@@ -120,30 +120,41 @@ export function GameCanvas({ backgroundMode = false }: GameCanvasProps) {
           <button className="close-btn" id="bet-panel-close" aria-label="Close">
             X
           </button>
-          <h2>PLACE YOUR BET</h2>
-          <p className="subtitle">Mock USD - Testnet Demo</p>
+          <h2>CONFIRM PAID RUN</h2>
+          <p className="subtitle">Fixed stake, on-chain outcome, checkpoint cash out</p>
 
-          <div className="field">
-            <label>STAKE ($)</label>
-            <input
-              type="number"
-              id="stake-input"
-              defaultValue="10"
-              min="1"
-              step="1"
-            />
-          </div>
-
-          <div className="quick-picks">
-            <button data-amount="5">$5</button>
-            <button data-amount="10">$10</button>
-            <button data-amount="25">$25</button>
-            <button data-amount="50">$50</button>
-            <button data-amount="100">$100</button>
+          <div className="odds-info">
+            <p className="odds-title">FIXED STAKE</p>
+            <div className="odds-row">
+              <span className="odds-key">Per run</span>
+              <strong>0.0001 USDC</strong>
+            </div>
+            <div className="odds-row">
+              <span className="odds-key">Editable</span>
+              <strong>NO</strong>
+            </div>
           </div>
 
           <div className="odds-info">
-            <p className="odds-title">BET RULES</p>
+            <p className="odds-title">VALUE RISK</p>
+            <div className="odds-note-list">
+              <div className="odds-note-item">
+                <span className="dot dot-yellow" aria-hidden="true" /> Starting a
+                live run spends 0.0001 USDC from your vault balance.
+              </div>
+              <div className="odds-note-item">
+                <span className="dot dot-red" aria-hidden="true" /> If you lose
+                before cash out, that 0.0001 USDC is lost.
+              </div>
+              <div className="odds-note-item">
+                <span className="dot dot-green" aria-hidden="true" /> If you win
+                and cash out, the stake returns with the payout reward.
+              </div>
+            </div>
+          </div>
+
+          <div className="odds-info">
+            <p className="odds-title">RUN RULES</p>
             <div className="odds-row">
               <span className="odds-key">Start multiplier</span>
               <strong>0.00x</strong>
@@ -179,10 +190,10 @@ export function GameCanvas({ backgroundMode = false }: GameCanvasProps) {
 
           <div className="modal-actions">
             <button id="start-bet-btn" className="primary">
-              START BET
+              START 0.0001 USDC RUN
             </button>
             <button id="free-play-btn" className="ghost">
-              Free Play (no bet)
+              FREE PRACTICE
             </button>
           </div>
         </div>
