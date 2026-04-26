@@ -6097,6 +6097,7 @@ canvas.game {
   }
 
   .play-wallet-trigger {
+    display: flex;
     height: var(--play-nav-control-height);
     min-height: var(--play-nav-control-height);
     padding: 0 12px;
@@ -6116,6 +6117,7 @@ canvas.game {
   }
 
   .play-menu-trigger {
+    display: flex;
     width: var(--play-mobile-right-action-width);
     height: var(--play-mobile-header-height);
     min-height: var(--play-mobile-header-height);
