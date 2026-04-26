@@ -13,7 +13,9 @@ function shortAddress(address: string) {
 
 function readActionErrorMessage(error: unknown, fallback: string) {
   if (error && typeof error === "object" && "message" in error) {
-    const message = String((error as { message?: string }).message || "").trim();
+    const message = String(
+      (error as { message?: string }).message || "",
+    ).trim();
     if (message) return message;
   }
 
@@ -68,8 +70,9 @@ export function PlayTopNav() {
   );
   const [transientStatus, setTransientStatus] =
     useState<PlayStatusState | null>(null);
-  const [playBlocker, setPlayBlocker] =
-    useState<ChickenBridgePlayBlocker>({ kind: "none" });
+  const [playBlocker, setPlayBlocker] = useState<ChickenBridgePlayBlocker>({
+    kind: "none",
+  });
   const [isResolvingPlayBlocker, setIsResolvingPlayBlocker] = useState(false);
   const navRef = useRef<HTMLElement | null>(null);
   const walletMenuRef = useRef<HTMLDivElement | null>(null);
@@ -172,7 +175,7 @@ export function PlayTopNav() {
       const eligibility = status.eligibility;
       const message = eligibility?.eligible
         ? `ELIGIBLE TIER ${eligibility.tier} • READY TO CLAIM`
-        : (eligibility?.reason || "Not eligible for passport yet.");
+        : eligibility?.reason || "Not eligible for passport yet.";
       setPassportStatusText(message);
       dispatchStatusUpdate({
         message,
@@ -609,183 +612,245 @@ export function PlayTopNav() {
     statusMessage === "READY TO PLAY" &&
     !statusActionLabel &&
     !transientStatus?.message;
+  const isMobileStatusClickable =
+    !isConnecting &&
+    !isBackendAuthLoading &&
+    !isResolvingPlayBlocker &&
+    (Boolean(statusActionLabel) ||
+      playBlocker.kind !== "none" ||
+      !isConnected ||
+      !isCeloChain ||
+      (hasBackendApiConfig && !isBackendAuthenticated));
+  const mobileStatusKicker =
+    statusTone === "error"
+      ? "ERROR"
+      : statusTone === "warning"
+        ? "ALERT"
+        : statusTone === "busy"
+          ? "WAIT"
+          : "READY";
+  const mobileStatusLabel = isResolvingPlayBlocker
+    ? "END"
+    : playBlocker.kind !== "none"
+      ? "CLEAR"
+      : !isConnected
+        ? "LINK"
+        : !isCeloChain
+          ? "SWITCH"
+          : hasBackendApiConfig && !isBackendAuthenticated
+            ? "SYNC"
+            : statusTone === "error"
+              ? "FIX"
+              : statusTone === "busy"
+                ? "..."
+                : "LIVE";
 
   return (
     <>
+      <div className="play-mobile-header-rail" aria-hidden="true" />
       <nav ref={navRef} className="play-nav">
-      <div className="play-nav-row">
-        <div ref={walletMenuRef} className="play-wallet-menu">
-          <button
-            type="button"
-            className={`play-wallet-trigger${isConnected ? " connected" : " connect"}`}
-            onClick={() => {
-              void onWalletButtonClick();
-            }}
-            disabled={isConnecting}
-            title={isConnected ? account : isMiniPay ? "MiniPay wallet" : "Connect wallet"}
-            aria-expanded={isConnected ? isWalletMenuOpen : false}
-          >
-            {isConnecting
-              ? "CONNECTING..."
-              : isConnected
-                ? shortAddress(account)
-                : isMiniPay
-                  ? "MINIPAY"
-                  : "CONNECT WALLET"}
-          </button>
-        </div>
-        <div ref={menuRootRef} className="play-menu-container">
-          <button
-            type="button"
-            className={`play-menu-trigger${isMenuOpen ? " active" : ""}`}
-            onClick={onMenuButtonClick}
-            aria-expanded={isMenuOpen}
-          >
-            <div className="hamburger-icon">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-          </button>
+        <div className="play-nav-row">
+          <div ref={walletMenuRef} className="play-wallet-menu">
+            <button
+              type="button"
+              className={`play-wallet-trigger${isConnected ? " connected" : " connect"}`}
+              onClick={() => {
+                void onWalletButtonClick();
+              }}
+              disabled={isConnecting}
+              title={
+                isConnected
+                  ? account
+                  : isMiniPay
+                    ? "MiniPay wallet"
+                    : "Connect wallet"
+              }
+              aria-expanded={isConnected ? isWalletMenuOpen : false}
+            >
+              {isConnecting
+                ? "CONNECTING..."
+                : isConnected
+                  ? shortAddress(account)
+                  : isMiniPay
+                    ? "MINIPAY"
+                    : "CONNECT WALLET"}
+            </button>
+          </div>
+          <div ref={menuRootRef} className="play-menu-container">
+            <button
+              type="button"
+              className={`play-menu-trigger${isMenuOpen ? " active" : ""}`}
+              onClick={onMenuButtonClick}
+              aria-expanded={isMenuOpen}
+            >
+              <div className="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </button>
 
-          {isMenuOpen && (
-            <div className="modal-bg play-menu-modal" onClick={onMenuButtonClick}>
+            {isMenuOpen && (
               <div
-                className="modal-box play-menu-box"
-                onClick={(e) => e.stopPropagation()}
+                className="modal-bg play-menu-modal"
+                onClick={onMenuButtonClick}
               >
-                <button
-                  className="close-btn"
-                  onClick={onMenuButtonClick}
-                  aria-label="Close"
+                <div
+                  className="modal-box play-menu-box"
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  X
-                </button>
-                <h2 className="play-menu-title">GAME MENU</h2>
-                <div className="play-menu-modal-list">
-                  <div className="play-menu-header">
-                    <span className="play-menu-wallet">
-                      {isConnected ? shortAddress(account) : "NOT CONNECTED"}
-                    </span>
-                    <button
-                      type="button"
-                      className="play-menu-stats-btn"
-                      onClick={onStatsClick}
-                    >
-                      STATS
-                    </button>
-                  </div>
-                  <div className="play-menu-modal-separator" />
                   <button
-                    type="button"
-                    className="play-menu-modal-item menu-item-home"
-                    onClick={() => {
-                      window.location.href = "/";
-                    }}
+                    className="close-btn"
+                    onClick={onMenuButtonClick}
+                    aria-label="Close"
                   >
-                    HOME
+                    X
                   </button>
-                  <button
-                    type="button"
-                    className="play-menu-modal-item menu-item-leaderboard"
-                    onClick={onLeaderboardMenuClick}
-                  >
-                    LEADERBOARD
-                  </button>
-                  <button
-                    type="button"
-                    className="play-menu-modal-item menu-item-passport-check"
-                    onClick={() => {
-                      void onCheckPassportClick();
-                    }}
-                    disabled={passportBusy}
-                  >
-                    CHECK PASSPORT
-                  </button>
-                  <button
-                    type="button"
-                    className="play-menu-modal-item menu-item-passport-claim"
-                    onClick={() => {
-                      void onClaimPassportClick();
-                    }}
-                    disabled={passportBusy}
-                  >
-                    {passportBusy ? "PROCESSING..." : "CLAIM PASSPORT"}
-                  </button>
-                  {passportStatusText ? (
-                    <p className="play-menu-passport-status">{passportStatusText}</p>
-                  ) : null}
-                  <div className="play-menu-volume">
-                    <div className="play-menu-volume-head">
-                      <span>SFX VOLUME</span>
-                      <strong>{sfxVolumePercent}%</strong>
+                  <h2 className="play-menu-title">GAME MENU</h2>
+                  <div className="play-menu-modal-list">
+                    <div className="play-menu-header">
+                      <span className="play-menu-wallet">
+                        {isConnected ? shortAddress(account) : "NOT CONNECTED"}
+                      </span>
+                      <button
+                        type="button"
+                        className="play-menu-stats-btn"
+                        onClick={onStatsClick}
+                      >
+                        STATS
+                      </button>
                     </div>
-                    <input
-                      type="range"
-                      min={0}
-                      max={100}
-                      step={1}
-                      value={sfxVolumePercent}
-                      onChange={(event) => {
-                        updateSfxVolume(Number(event.target.value));
-                      }}
-                      aria-label="SFX volume"
-                    />
+                    <div className="play-menu-modal-separator" />
                     <button
                       type="button"
-                      className="play-menu-volume-mute"
+                      className="play-menu-modal-item menu-item-home"
                       onClick={() => {
-                        updateSfxVolume(0);
+                        window.location.href = "/";
                       }}
                     >
-                      MUTE
+                      HOME
                     </button>
-                  </div>
-                  <div className="play-menu-modal-separator" />
-                  {canDisconnect ? (
                     <button
                       type="button"
-                      className="play-menu-modal-item logout"
-                      onClick={onLogoutClick}
+                      className="play-menu-modal-item menu-item-leaderboard"
+                      onClick={onLeaderboardMenuClick}
                     >
-                      LOG OUT
+                      LEADERBOARD
                     </button>
-                  ) : null}
+                    <button
+                      type="button"
+                      className="play-menu-modal-item menu-item-passport-check"
+                      onClick={() => {
+                        void onCheckPassportClick();
+                      }}
+                      disabled={passportBusy}
+                    >
+                      CHECK PASSPORT
+                    </button>
+                    <button
+                      type="button"
+                      className="play-menu-modal-item menu-item-passport-claim"
+                      onClick={() => {
+                        void onClaimPassportClick();
+                      }}
+                      disabled={passportBusy}
+                    >
+                      {passportBusy ? "PROCESSING..." : "CLAIM PASSPORT"}
+                    </button>
+                    {passportStatusText ? (
+                      <p className="play-menu-passport-status">
+                        {passportStatusText}
+                      </p>
+                    ) : null}
+                    <div className="play-menu-volume">
+                      <div className="play-menu-volume-head">
+                        <span>SFX VOLUME</span>
+                        <strong>{sfxVolumePercent}%</strong>
+                      </div>
+                      <input
+                        type="range"
+                        min={0}
+                        max={100}
+                        step={1}
+                        value={sfxVolumePercent}
+                        onChange={(event) => {
+                          updateSfxVolume(Number(event.target.value));
+                        }}
+                        aria-label="SFX volume"
+                      />
+                      <button
+                        type="button"
+                        className="play-menu-volume-mute"
+                        onClick={() => {
+                          updateSfxVolume(0);
+                        }}
+                      >
+                        MUTE
+                      </button>
+                    </div>
+                    <div className="play-menu-modal-separator" />
+                    {canDisconnect ? (
+                      <button
+                        type="button"
+                        className="play-menu-modal-item logout"
+                        onClick={onLogoutClick}
+                      >
+                        LOG OUT
+                      </button>
+                    ) : null}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </div>
-      <button
-        type="button"
-        className={`play-nav-deposit${isDepositBusy ? " busy" : ""}`}
-        onClick={openDepositModal}
-        disabled={isDepositBusy}
-      >
-        {depositLabel}
-      </button>
-      <div
-        className={`play-status play-status-${statusTone}${isIdleReadyStatus ? " play-status-idle" : ""}`}
-        aria-live="polite"
-      >
-        <span className="play-status-text">{statusMessage}</span>
-        {statusActionLabel ? (
-          <button
-            type="button"
-            className="play-status-action"
-            onClick={() => {
-              void onStatusActionClick();
-            }}
-            disabled={
-              isConnecting || isBackendAuthLoading || isResolvingPlayBlocker
-            }
-          >
-            {statusActionLabel}
-          </button>
-        ) : null}
-      </div>
-    </nav>
+        <button
+          type="button"
+          className={`play-nav-deposit${isDepositBusy ? " busy" : ""}`}
+          onClick={openDepositModal}
+          disabled={isDepositBusy}
+        >
+          {depositLabel}
+        </button>
+        <button
+          type="button"
+          className={`play-status-mobile play-status-mobile-${statusTone}${
+            isMobileStatusClickable ? " play-status-mobile-clickable" : ""
+          }`}
+          onClick={() => {
+            if (!isMobileStatusClickable) return;
+            void onStatusActionClick();
+          }}
+          disabled={!isMobileStatusClickable}
+          aria-label={statusMessage}
+          title={statusMessage}
+        >
+          <span className="play-status-mobile-kicker">
+            {mobileStatusKicker}
+          </span>
+          <span className="play-status-mobile-label">{mobileStatusLabel}</span>
+        </button>
+        <div
+          className={`play-status play-status-${statusTone}${isIdleReadyStatus ? " play-status-idle" : ""}`}
+          aria-live="polite"
+        >
+          <span className="play-status-text">{statusMessage}</span>
+          {statusActionLabel ? (
+            <button
+              type="button"
+              className="play-status-action"
+              onClick={() => {
+                void onStatusActionClick();
+              }}
+              disabled={
+                isConnecting || isBackendAuthLoading || isResolvingPlayBlocker
+              }
+            >
+              {statusActionLabel}
+            </button>
+          ) : null}
+        </div>
+      </nav>
       {passportPopup ? (
         <div
           className="modal-bg play-passport-modal"
@@ -819,7 +884,9 @@ export function PlayTopNav() {
                 loading="lazy"
                 draggable={false}
               />
-              <p className="play-passport-name">{shortAddress(account || "")}</p>
+              <p className="play-passport-name">
+                {shortAddress(account || "")}
+              </p>
               <p className="play-passport-tier">TIER {passportPopup.tier}</p>
               <p className="play-passport-expiry">
                 EXP:{" "}
@@ -845,7 +912,11 @@ export function PlayTopNav() {
         aria-hidden="true"
       >
         <div className="modal-box leaderboard-modal-box">
-          <button className="close-btn" id="leaderboard-close-btn" type="button">
+          <button
+            className="close-btn"
+            id="leaderboard-close-btn"
+            type="button"
+          >
             X
           </button>
           <div className="leaderboard-panel-head">

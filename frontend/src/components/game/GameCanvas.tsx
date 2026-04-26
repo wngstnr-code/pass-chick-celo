@@ -88,7 +88,7 @@ export function GameCanvas({ backgroundMode = false }: GameCanvasProps) {
           </div>
         </div>
         <div id="top-bar-center">
-          <div className="stat-card">
+          <div className="stat-card play-balance-card">
             <div className="stat-label">BALANCE</div>
             <div className="stat-value" id="balance">
               $0.00
