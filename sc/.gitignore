@@ -1,0 +1,14 @@
+# Compiler files
+cache/
+out/
+lib/
+.DS_Store
+
+# Broadcast outputs
+broadcast/
+
+# Docs
+docs/
+
+# Dotenv file
+.env

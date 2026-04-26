@@ -1,0 +1,23 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+remappings = [
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+    "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/"
+]
+
+# Source-verification-friendly profile for Celo deployments.
+# Use with: FOUNDRY_PROFILE=source_verify
+[profile.source_verify]
+bytecode_hash = "none"
+use_literal_content = true
+cbor_metadata = true
+optimizer = true
+optimizer_runs = 200
+via_ir = true
+
+[rpc_endpoints]
+celo_sepolia = "${CELO_SEPOLIA_RPC_URL}"
+
+# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
