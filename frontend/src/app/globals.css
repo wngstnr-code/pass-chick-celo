@@ -5935,12 +5935,12 @@ canvas.game {
 
 @media (max-width: 767px) {
   :root {
-    --play-mobile-edge-gutter: 10px;
-    --play-mobile-top-action-width: 100px;
-    --play-mobile-right-action-width: 84px;
-    --play-mobile-header-height: 38px;
-    --play-mobile-menu-size: 42px;
-    --play-mobile-side-gap: 10px;
+    --play-mobile-edge-gutter: 8px;
+    --play-mobile-top-action-width: 88px;
+    --play-mobile-right-action-width: 80px;
+    --play-mobile-header-height: 36px;
+    --play-mobile-menu-size: 38px;
+    --play-mobile-side-gap: 8px;
   }
 
   .play-mobile-header-rail {
@@ -6260,6 +6260,7 @@ canvas.game {
     align-self: stretch;
     justify-self: stretch;
     min-width: 0;
+    width: 100%;
     min-height: 72px;
     padding: 6px 8px;
     font-size: 10px;
@@ -6276,9 +6277,12 @@ canvas.game {
   }
 
   #bet-hud {
+    grid-column: 2;
+    grid-row: 2;
     top: auto;
     right: auto;
     width: 100%;
+    min-width: 0;
   }
 
   .score-card {
