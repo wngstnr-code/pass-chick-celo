@@ -67,10 +67,12 @@ export function ManageMoneyPage() {
 
   const quickAmounts = useMemo<QuickAmountPreset[]>(() => {
     const presets: QuickAmountPreset[] = [
-      { label: "10 USDC", value: "10" },
-      { label: "25 USDC", value: "25" },
-      { label: "50 USDC", value: "50" },
-      { label: "100 USDC", value: "100" },
+      { label: "0.0001 USDC", value: "0.0001" },
+      { label: "0.0005 USDC", value: "0.0005" },
+      { label: "0.0010 USDC", value: "0.001" },
+      { label: "0.0025 USDC", value: "0.0025" },
+      { label: "0.0050 USDC", value: "0.005" },
+      { label: "0.0100 USDC", value: "0.01" },
     ];
 
     if (walletPreset) {
@@ -218,8 +220,8 @@ export function ManageMoneyPage() {
                 className="flow-input money-input"
                 type="number"
                 min="0"
-                step="0.01"
-                placeholder="0.00"
+                step="0.0001"
+                placeholder="0.0000"
                 value={flow.amount}
                 onChange={(event: ChangeEvent<HTMLInputElement>) =>
                   flow.setAmount(event.target.value)

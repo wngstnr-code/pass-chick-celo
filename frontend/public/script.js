@@ -3069,8 +3069,12 @@ function initBettingUI() {
   }
 
   function openDepositModal(presetAmount) {
-    if (depositAmount && isFinite(presetAmount) && presetAmount > 0) {
-      depositAmount.value = String(presetAmount);
+    if (depositAmount) {
+      if (isFinite(presetAmount) && presetAmount > 0) {
+        depositAmount.value = String(presetAmount);
+      } else {
+        depositAmount.value = "0.0001";
+      }
     }
     setDepositStatus("");
     void refreshDepositBalanceCard();

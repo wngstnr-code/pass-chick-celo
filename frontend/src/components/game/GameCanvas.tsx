@@ -211,17 +211,19 @@ export function GameCanvas({ backgroundMode = false }: GameCanvasProps) {
             <input
               type="number"
               id="deposit-amount"
-              defaultValue="100"
+              defaultValue="0.0001"
               min="0.0001"
               step="0.0001"
             />
           </div>
 
           <div className="quick-picks">
-            <button data-deposit="50">+$50</button>
-            <button data-deposit="100">+$100</button>
-            <button data-deposit="500">+$500</button>
-            <button data-deposit="1000">+$1000</button>
+            <button data-deposit="0.0001">0.0001</button>
+            <button data-deposit="0.0005">0.0005</button>
+            <button data-deposit="0.001">0.0010</button>
+            <button data-deposit="0.0025">0.0025</button>
+            <button data-deposit="0.005">0.0050</button>
+            <button data-deposit="0.01">0.0100</button>
           </div>
 
           <div className="deposit-balances" id="deposit-balances">

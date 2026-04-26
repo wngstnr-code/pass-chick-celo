@@ -98,10 +98,10 @@ export function useOnchainDepositFlow(): DepositFlowViewModel {
   const { account, isMiniPay, isCeloChain } = useWallet();
   const [amount, setAmount] = useState(() => {
     if (typeof window === "undefined") {
-      return "10";
+      return "0.0001";
     }
 
-    return new URLSearchParams(window.location.search).get("amount") || "10";
+    return new URLSearchParams(window.location.search).get("amount") || "0.0001";
   });
   const [statusMessage, setStatusMessage] = useState("");
   const [uiError, setUiError] = useState("");
