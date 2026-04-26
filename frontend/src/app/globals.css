@@ -2303,8 +2303,8 @@ canvas.game {
     linear-gradient(145deg, #3f77b7 0%, #2b4e90 45%, #2a1142 100%);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 4px 5px 0 rgba(0, 0, 0, 0.22);
   color: #f5fbff;
-  min-height: 176px;
-  padding: 18px 16px;
+  min-height: 220px;
+  padding: 32px 16px 18px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -2335,17 +2335,23 @@ canvas.game {
   background: rgba(255, 255, 255, 0.16);
 }
 
-.play-passport-chip {
+.play-passport-card .play-passport-celo-logo {
   position: absolute;
-  top: 16px;
+  top: 12px;
   left: 16px;
   width: 42px;
-  height: 32px;
-  border-radius: 7px;
-  border: 2px solid #9a7318;
-  background:
-    linear-gradient(135deg, #35d07f 0%, #17b26a 45%, #0d7f48 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  height: 42px;
+  max-width: none;
+  min-width: 42px;
+  min-height: 42px;
+  flex: none;
+  align-self: flex-start;
+  display: block;
+  border-radius: 999px;
+  object-fit: cover;
+  object-position: center;
+  box-shadow: 0 2px 8px rgba(11, 16, 28, 0.28);
+  z-index: 2;
 }
 
 .play-passport-name,
@@ -3128,17 +3134,19 @@ canvas.game {
   }
 
   .play-passport-card {
-    min-height: 142px;
+    min-height: 176px;
     border-width: 2px;
     border-radius: 12px;
-    padding: 14px 12px;
+    padding: 26px 12px 14px;
     gap: 8px;
   }
 
-  .play-passport-chip {
+  .play-passport-card .play-passport-celo-logo {
     width: 34px;
-    height: 26px;
-    top: 12px;
+    height: 34px;
+    min-width: 34px;
+    min-height: 34px;
+    top: 10px;
     left: 12px;
   }
 

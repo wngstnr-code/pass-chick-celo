@@ -812,7 +812,13 @@ export function PlayTopNav() {
             <p className="play-passport-kicker">CHICKEN TRUST PASSPORT</p>
             <h3 className="play-passport-title">PASSPORT CLAIMED</h3>
             <div className="play-passport-card">
-              <div className="play-passport-chip" aria-hidden="true" />
+              <img
+                className="play-passport-celo-logo"
+                src="/images/logo-celo.png"
+                alt="Celo logo"
+                loading="lazy"
+                draggable={false}
+              />
               <p className="play-passport-name">{shortAddress(account || "")}</p>
               <p className="play-passport-tier">TIER {passportPopup.tier}</p>
               <p className="play-passport-expiry">
