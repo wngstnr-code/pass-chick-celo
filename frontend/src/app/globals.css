@@ -1882,8 +1882,15 @@ canvas.game {
 }
 
 .modal-box-deposit {
-  width: min(540px, calc(100vw - 28px));
+  width: min(600px, calc(100vw - 28px));
   gap: 10px;
+}
+
+.modal-box-deposit .field,
+.modal-box-deposit .quick-picks,
+.modal-box-deposit .deposit-balances,
+.modal-box-deposit .modal-actions {
+  width: 100%;
 }
 
 .quick-picks {
@@ -1892,7 +1899,12 @@ canvas.game {
 }
 
 .modal-box-deposit .quick-picks {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.modal-box-deposit .quick-picks button {
+  min-width: 0;
+  font-size: 9px;
 }
 
 .quick-picks button {
