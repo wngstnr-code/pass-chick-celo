@@ -1322,24 +1322,31 @@ function createCeloCheckpointBannerTexture(cpNumber) {
 
   if (!ctx) return new THREE.CanvasTexture(canvas);
 
-  ctx.fillStyle = "#1a1036";
+  const bgGradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+  bgGradient.addColorStop(0, "#0f1f4a");
+  bgGradient.addColorStop(0.55, "#1a2f66");
+  bgGradient.addColorStop(1, "#274487");
+  ctx.fillStyle = bgGradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  ctx.fillStyle = "#8f6dff";
-  ctx.fillRect(0, 0, canvas.width, 10);
-  ctx.fillRect(0, canvas.height - 10, canvas.width, 10);
+  const stripeGradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+  stripeGradient.addColorStop(0, "#7cffbe");
+  stripeGradient.addColorStop(1, "#35d07f");
+  ctx.fillStyle = stripeGradient;
+  ctx.fillRect(0, 0, canvas.width, 11);
+  ctx.fillRect(0, canvas.height - 11, canvas.width, 11);
 
-  ctx.fillStyle = "#ffffff";
+  ctx.fillStyle = "#f4da60";
   ctx.beginPath();
   ctx.arc(54, canvas.height / 2, 24, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.fillStyle = "#1a1036";
+  ctx.fillStyle = "#102250";
   ctx.beginPath();
   ctx.arc(54, canvas.height / 2, 13, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.fillStyle = "#ffffff";
+  ctx.fillStyle = "#edfff7";
   ctx.font = "bold 38px Arial";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
@@ -1368,11 +1375,11 @@ function createCeloGroundTexture() {
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
 
-  ctx.strokeStyle = "rgba(255,255,255,0.88)";
-  ctx.lineWidth = 18;
+  ctx.strokeStyle = "rgba(120,90,16,0.95)";
+  ctx.lineWidth = 16;
   ctx.strokeText("CELO", canvas.width / 2, canvas.height / 2 + 6);
 
-  ctx.fillStyle = "rgba(30, 18, 64, 0.88)";
+  ctx.fillStyle = "rgba(244, 218, 96, 0.96)";
   ctx.fillText("CELO", canvas.width / 2, canvas.height / 2 + 6);
 
   const texture = new THREE.CanvasTexture(canvas);
@@ -1390,8 +1397,8 @@ function Grass(rowIndex, isCheckpoint) {
       new THREE.MeshLambertMaterial({ color }),
     );
 
-  const middleColor = isCheckpoint ? 0xffe066 : 0xbaf455;
-  const sideColor = isCheckpoint ? 0xf5c518 : 0x99c846;
+  const middleColor = isCheckpoint ? 0x2f4f9d : 0xbaf455;
+  const sideColor = isCheckpoint ? 0x243f82 : 0x99c846;
 
   const middle = createSection(middleColor);
   middle.receiveShadow = true;
@@ -1408,7 +1415,7 @@ function Grass(rowIndex, isCheckpoint) {
   if (isCheckpoint) {
     const cpNumber = Math.floor(rowIndex / CP_INTERVAL);
     const postMat = new THREE.MeshLambertMaterial({
-      color: 0x8b4513,
+      color: 0x162c62,
       flatShading: true,
     });
     const bannerMat = new THREE.MeshLambertMaterial({
@@ -1433,6 +1440,15 @@ function Grass(rowIndex, isCheckpoint) {
     banner.castShadow = true;
     grass.add(banner);
 
+    [-1, 1].forEach((side) => {
+      const laneGlow = new THREE.Mesh(
+        new THREE.BoxGeometry(8, tileSize * 0.95, 0.6),
+        new THREE.MeshLambertMaterial({ color: 0x6de7b0, flatShading: true }),
+      );
+      laneGlow.position.set(side * tilesPerRow * tileSize * 0.47, 0, 2.2);
+      grass.add(laneGlow);
+    });
+
     const celoGroundLabel = new THREE.Mesh(
       new THREE.PlaneGeometry(tilesPerRow * tileSize * 0.62, tileSize * 0.7),
       new THREE.MeshBasicMaterial({
@@ -1448,7 +1464,7 @@ function Grass(rowIndex, isCheckpoint) {
     [-1, 1].forEach((side) => {
       const flag = new THREE.Mesh(
         new THREE.BoxGeometry(2, 2, 18),
-        new THREE.MeshLambertMaterial({ color: 0x7d5cff, flatShading: true }),
+        new THREE.MeshLambertMaterial({ color: 0x35d07f, flatShading: true }),
       );
       flag.position.set(side * tilesPerRow * tileSize * 0.42, 15, 9);
       flag.castShadow = true;
@@ -1456,7 +1472,7 @@ function Grass(rowIndex, isCheckpoint) {
 
       const flagTop = new THREE.Mesh(
         new THREE.BoxGeometry(8, 1, 5),
-        new THREE.MeshLambertMaterial({ color: 0xffffff, flatShading: true }),
+        new THREE.MeshLambertMaterial({ color: 0xf4ff67, flatShading: true }),
       );
       flagTop.position.set(
         side * tilesPerRow * tileSize * 0.42 + side * 4,
