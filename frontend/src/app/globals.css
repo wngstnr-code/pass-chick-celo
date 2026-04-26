@@ -101,7 +101,9 @@ canvas.game {
   border-radius: 10px;
   cursor: pointer;
   box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.4);
-  transition: transform 0.05s ease, box-shadow 0.05s ease;
+  transition:
+    transform 0.05s ease,
+    box-shadow 0.05s ease;
   letter-spacing: 1px;
 }
 
@@ -132,8 +134,6 @@ canvas.game {
 /* ============================================================
    BET HUD — shown during active bet
 ============================================================ */
-
-
 
 .hud-row {
   display: flex;
@@ -199,7 +199,9 @@ canvas.game {
   cursor: pointer;
   box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.4);
   letter-spacing: 2px;
-  transition: transform 0.05s ease, box-shadow 0.05s ease;
+  transition:
+    transform 0.05s ease,
+    box-shadow 0.05s ease;
 }
 
 #cash-out-btn:active {
@@ -240,7 +242,9 @@ canvas.game {
   outline: none;
   font-size: 14px;
   color: #2c3e50;
-  transition: transform 0.05s ease, box-shadow 0.05s ease;
+  transition:
+    transform 0.05s ease,
+    box-shadow 0.05s ease;
 }
 
 #controls button:active {
@@ -296,7 +300,10 @@ canvas.game {
   color: #2c3e50;
   cursor: pointer;
   box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.3);
-  transition: transform 0.05s ease, box-shadow 0.05s ease, background 0.1s ease;
+  transition:
+    transform 0.05s ease,
+    box-shadow 0.05s ease,
+    background 0.1s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -373,7 +380,9 @@ canvas.game {
   color: #2c3e50;
   cursor: pointer;
   box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.3);
-  transition: transform 0.05s ease, box-shadow 0.05s ease;
+  transition:
+    transform 0.05s ease,
+    box-shadow 0.05s ease;
 }
 
 .quick-picks button:hover {
@@ -485,7 +494,9 @@ canvas.game {
   border-radius: 10px;
   cursor: pointer;
   letter-spacing: 2px;
-  transition: transform 0.05s ease, box-shadow 0.05s ease;
+  transition:
+    transform 0.05s ease,
+    box-shadow 0.05s ease;
 }
 
 .modal-actions a {
@@ -500,7 +511,9 @@ canvas.game {
   box-sizing: border-box;
   align-items: center;
   justify-content: center;
-  transition: transform 0.05s ease, box-shadow 0.05s ease;
+  transition:
+    transform 0.05s ease,
+    box-shadow 0.05s ease;
 }
 
 .modal-actions button.primary {
@@ -670,7 +683,10 @@ canvas.game {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.05s ease, box-shadow 0.05s ease, filter 0.15s ease;
+  transition:
+    transform 0.05s ease,
+    box-shadow 0.05s ease,
+    filter 0.15s ease;
 }
 
 .fixed-help:active {
@@ -849,8 +865,6 @@ canvas.game {
     display: none; /* hide in mobile, bet-cp shows it */
   }
 
-
-
   .hud-row {
     font-size: 9px;
     padding: 4px 0;
@@ -1014,16 +1028,12 @@ canvas.game {
     font-size: 8px;
     padding: 0 8px;
   }
-
-
 }
 
 @media (orientation: landscape) and (max-height: 500px) {
   #top-bar {
     top: 6px;
   }
-
-
 
   #controls {
     bottom: 10px;
@@ -1065,7 +1075,11 @@ canvas.game {
   z-index: 5;
   pointer-events: none;
   background:
-    radial-gradient(circle at 50% 0%, rgba(12, 18, 36, 0.2) 0%, rgba(12, 18, 36, 0) 45%),
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(12, 18, 36, 0.2) 0%,
+      rgba(12, 18, 36, 0) 45%
+    ),
     linear-gradient(180deg, rgba(8, 12, 24, 0.18) 0%, rgba(8, 12, 24, 0) 24%);
 }
 
@@ -1115,7 +1129,11 @@ canvas.game {
   min-width: 140px;
   flex-shrink: 0;
   border-color: rgba(255, 255, 255, 0.8);
-  background: linear-gradient(180deg, rgba(18, 28, 52, 0.84) 0%, rgba(29, 41, 74, 0.84) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(18, 28, 52, 0.84) 0%,
+    rgba(29, 41, 74, 0.84) 100%
+  );
   backdrop-filter: blur(2px);
 }
 
@@ -1191,7 +1209,9 @@ canvas.game {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.05s ease, box-shadow 0.05s ease;
+  transition:
+    transform 0.05s ease,
+    box-shadow 0.05s ease;
 }
 
 #leaderboard-btn {
@@ -1259,7 +1279,9 @@ canvas.game {
   width: 100%;
   max-height: 85vh;
   overflow-y: auto;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 10px 12px 0 rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.4),
+    10px 12px 0 rgba(0, 0, 0, 0.2);
 }
 
 .stats-modal-box {
@@ -1271,7 +1293,9 @@ canvas.game {
   width: 100%;
   max-height: 85vh;
   overflow-y: auto;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 10px 12px 0 rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.4),
+    10px 12px 0 rgba(0, 0, 0, 0.2);
 }
 
 .leaderboard-panel-head {
@@ -1465,7 +1489,10 @@ canvas.game {
   font-size: 9px;
   letter-spacing: 0.5px;
   cursor: pointer;
-  transition: transform 0.05s ease, box-shadow 0.05s ease, background 0.12s ease;
+  transition:
+    transform 0.05s ease,
+    box-shadow 0.05s ease,
+    background 0.12s ease;
   box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.1);
 }
 
@@ -1646,7 +1673,11 @@ canvas.game {
   border: 2px solid rgba(184, 212, 255, 0.9);
   background:
     linear-gradient(140deg, rgba(255, 255, 255, 0.05) 0%, transparent 38%),
-    linear-gradient(180deg, rgba(16, 24, 44, 0.94) 0%, rgba(30, 42, 72, 0.94) 100%);
+    linear-gradient(
+      180deg,
+      rgba(16, 24, 44, 0.94) 0%,
+      rgba(30, 42, 72, 0.94) 100%
+    );
   box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.4);
   color: #edf5ff;
   overflow: hidden;
@@ -1850,7 +1881,7 @@ canvas.game {
 }
 
 .modal-box-bet {
-  width: min(620px, calc(100vw - 28px));
+  width: min(700px, calc(100vw - 28px));
 }
 
 .modal-box-deposit {
@@ -1960,11 +1991,18 @@ canvas.game {
   font-size: 11px;
   cursor: pointer;
   box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.4);
-  transition: transform 0.05s ease, box-shadow 0.05s ease, filter 0.08s ease;
+  transition:
+    transform 0.05s ease,
+    box-shadow 0.05s ease,
+    filter 0.08s ease;
 }
 
 .play-wallet-trigger.connected {
-  background: linear-gradient(180deg, rgba(16, 24, 44, 0.9) 0%, rgba(30, 42, 72, 0.9) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(16, 24, 44, 0.9) 0%,
+    rgba(30, 42, 72, 0.9) 100%
+  );
   border: 2px solid rgba(184, 212, 255, 0.9);
   color: #f3f8ff;
 }
@@ -1992,7 +2030,11 @@ canvas.game {
   width: 100%;
   border-radius: 12px;
   border: 2px solid rgba(184, 212, 255, 0.9);
-  background: linear-gradient(180deg, rgba(16, 24, 44, 0.95) 0%, rgba(30, 42, 72, 0.95) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(16, 24, 44, 0.95) 0%,
+    rgba(30, 42, 72, 0.95) 100%
+  );
   box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.4);
   padding: 8px;
   box-sizing: border-box;
@@ -2036,7 +2078,9 @@ canvas.game {
   border: 2px solid #2c3e50;
   background: linear-gradient(180deg, #f5f6f7 0%, #bdc3c7 100%);
   box-shadow: 0 4px 0 #7f8c8d;
-  transition: transform 0.05s ease, box-shadow 0.05s ease;
+  transition:
+    transform 0.05s ease,
+    box-shadow 0.05s ease;
   padding: 0;
 }
 
@@ -2088,7 +2132,9 @@ canvas.game {
   border: 1px solid rgba(184, 212, 255, 0.3);
   background: rgba(255, 255, 255, 0.08);
   color: #edf5ff;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .play-menu-item:hover {
@@ -2122,7 +2168,9 @@ canvas.game {
   flex-direction: column;
   gap: 24px;
   position: relative;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 10px 12px 0 rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.4),
+    10px 12px 0 rgba(0, 0, 0, 0.2);
 }
 
 .play-menu-title {
@@ -2215,7 +2263,9 @@ canvas.game {
   letter-spacing: 0.5px;
   cursor: pointer;
   box-shadow: 4px 5px 0 rgba(0, 0, 0, 0.3);
-  transition: transform 0.05s ease, box-shadow 0.05s ease;
+  transition:
+    transform 0.05s ease,
+    box-shadow 0.05s ease;
   border: 3px solid #2c3e50;
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
@@ -2272,7 +2322,9 @@ canvas.game {
   border: 4px solid #2f405a;
   border-radius: 24px;
   background: #ffffff;
-  box-shadow: 0 12px 38px rgba(0, 0, 0, 0.35), 9px 10px 0 rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 12px 38px rgba(0, 0, 0, 0.35),
+    9px 10px 0 rgba(0, 0, 0, 0.2);
   padding: 32px 24px 24px;
   display: flex;
   flex-direction: column;
@@ -2301,7 +2353,9 @@ canvas.game {
   background:
     linear-gradient(115deg, rgba(255, 255, 255, 0.2) 0 34%, transparent 34%),
     linear-gradient(145deg, #3f77b7 0%, #2b4e90 45%, #2a1142 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 4px 5px 0 rgba(0, 0, 0, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    4px 5px 0 rgba(0, 0, 0, 0.22);
   color: #f5fbff;
   min-height: 220px;
   padding: 32px 16px 18px;
@@ -2391,19 +2445,28 @@ canvas.game {
   font-size: 10px;
   letter-spacing: 1px;
   cursor: pointer;
-  box-shadow: 0 4px 0 #b07d22, 0 8px 14px rgba(29, 12, 47, 0.2);
-  transition: transform 0.08s ease, background-color 0.12s ease, box-shadow 0.12s ease;
+  box-shadow:
+    0 4px 0 #b07d22,
+    0 8px 14px rgba(29, 12, 47, 0.2);
+  transition:
+    transform 0.08s ease,
+    background-color 0.12s ease,
+    box-shadow 0.12s ease;
 }
 
 .play-passport-cta:hover {
   background: #ffd279;
-  box-shadow: 0 5px 0 #b07d22, 0 10px 16px rgba(29, 12, 47, 0.22);
+  box-shadow:
+    0 5px 0 #b07d22,
+    0 10px 16px rgba(29, 12, 47, 0.22);
 }
 
 .play-passport-cta:active {
   transform: translateY(3px);
   background: #e5b254;
-  box-shadow: 0 1px 0 #b07d22, 0 2px 6px rgba(29, 12, 47, 0.2);
+  box-shadow:
+    0 1px 0 #b07d22,
+    0 2px 6px rgba(29, 12, 47, 0.2);
 }
 
 /* Logout - Red */
@@ -2466,8 +2529,6 @@ canvas.game {
   box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.24);
 }
 
-
-
 .play-nav-deposit {
   width: 100%;
   min-height: 40px;
@@ -2480,7 +2541,9 @@ canvas.game {
   letter-spacing: 1px;
   cursor: pointer;
   box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.4);
-  transition: transform 0.05s ease, box-shadow 0.05s ease;
+  transition:
+    transform 0.05s ease,
+    box-shadow 0.05s ease;
 }
 
 .play-nav-deposit:active:not(:disabled) {
@@ -2504,7 +2567,11 @@ canvas.game {
   border-radius: 12px;
   padding: 6px 10px;
   border: 2px solid rgba(184, 212, 255, 0.45);
-  background: linear-gradient(180deg, rgba(18, 27, 49, 0.88) 0%, rgba(28, 37, 63, 0.9) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(18, 27, 49, 0.88) 0%,
+    rgba(28, 37, 63, 0.9) 100%
+  );
   box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.34);
   display: flex;
   align-items: center;
@@ -2544,7 +2611,9 @@ canvas.game {
   font-size: 11px;
   letter-spacing: 0.8px;
   cursor: pointer;
-  transition: transform 0.05s ease, filter 0.08s ease;
+  transition:
+    transform 0.05s ease,
+    filter 0.08s ease;
 }
 
 .play-status-action:active:not(:disabled) {
@@ -2558,7 +2627,11 @@ canvas.game {
 
 .play-status-ready {
   border-color: rgba(118, 247, 191, 0.55);
-  background: linear-gradient(180deg, rgba(14, 42, 35, 0.9) 0%, rgba(18, 58, 46, 0.92) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(14, 42, 35, 0.9) 0%,
+    rgba(18, 58, 46, 0.92) 100%
+  );
 }
 
 .play-status-ready .play-status-text {
@@ -2567,12 +2640,20 @@ canvas.game {
 
 .play-status-info {
   border-color: rgba(151, 206, 255, 0.55);
-  background: linear-gradient(180deg, rgba(18, 36, 60, 0.9) 0%, rgba(24, 50, 82, 0.92) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(18, 36, 60, 0.9) 0%,
+    rgba(24, 50, 82, 0.92) 100%
+  );
 }
 
 .play-status-warning {
   border-color: rgba(255, 214, 122, 0.62);
-  background: linear-gradient(180deg, rgba(64, 40, 10, 0.92) 0%, rgba(88, 54, 14, 0.94) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(64, 40, 10, 0.92) 0%,
+    rgba(88, 54, 14, 0.94) 100%
+  );
 }
 
 .play-status-warning .play-status-text {
@@ -2587,7 +2668,11 @@ canvas.game {
 
 .play-status-error {
   border-color: rgba(255, 134, 134, 0.68);
-  background: linear-gradient(180deg, rgba(73, 23, 23, 0.94) 0%, rgba(94, 26, 26, 0.96) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(73, 23, 23, 0.94) 0%,
+    rgba(94, 26, 26, 0.96) 100%
+  );
 }
 
 .play-status-error .play-status-text {
@@ -2601,7 +2686,11 @@ canvas.game {
 
 .play-status-busy {
   border-color: rgba(160, 232, 205, 0.55);
-  background: linear-gradient(180deg, rgba(16, 50, 41, 0.92) 0%, rgba(20, 63, 50, 0.94) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(16, 50, 41, 0.92) 0%,
+    rgba(20, 63, 50, 0.94) 100%
+  );
   animation: ui-pulse 0.9s ease-in-out infinite alternate;
 }
 
@@ -3375,12 +3464,23 @@ canvas.game {
   justify-content: center;
   padding: 24px;
   box-sizing: border-box;
-  background: linear-gradient(180deg, #7ec9ff 0%, #9cddff 38%, #b7e8ff 70%, #d8f5ff 100%);
+  background: linear-gradient(
+    180deg,
+    #7ec9ff 0%,
+    #9cddff 38%,
+    #b7e8ff 70%,
+    #d8f5ff 100%
+  );
 }
 
 .flow-card {
   width: min(680px, 100%);
-  background: linear-gradient(180deg, rgba(12, 18, 36, 0.96) 0%, rgba(28, 33, 60, 0.96) 55%, rgba(16, 29, 51, 0.96) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(12, 18, 36, 0.96) 0%,
+    rgba(28, 33, 60, 0.96) 55%,
+    rgba(16, 29, 51, 0.96) 100%
+  );
   backdrop-filter: blur(12px);
   border: 1px solid rgba(241, 181, 77, 0.55);
   border-radius: 16px;
@@ -3434,8 +3534,16 @@ canvas.game {
   inset: 0;
   z-index: 1;
   background:
-    radial-gradient(circle at 20% 18%, rgba(255, 222, 119, 0.12) 0%, rgba(255, 222, 119, 0) 28%),
-    linear-gradient(180deg, rgba(7, 14, 29, 0.34) 0%, rgba(7, 14, 29, 0.76) 100%);
+    radial-gradient(
+      circle at 20% 18%,
+      rgba(255, 222, 119, 0.12) 0%,
+      rgba(255, 222, 119, 0) 28%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(7, 14, 29, 0.34) 0%,
+      rgba(7, 14, 29, 0.76) 100%
+    );
 }
 
 .money-card {
@@ -3625,7 +3733,10 @@ canvas.game {
   background: rgba(255, 255, 255, 0.08);
   color: #f4f8ff;
   cursor: pointer;
-  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .money-quick-pick:hover {
@@ -3854,8 +3965,15 @@ canvas.game {
 }
 
 @keyframes decay-scary-blink {
-  0%, 100% { color: #ff9b9b; text-shadow: none; }
-  50% { color: #ff0000; text-shadow: 0 0 8px rgba(255, 0, 0, 0.6); }
+  0%,
+  100% {
+    color: #ff9b9b;
+    text-shadow: none;
+  }
+  50% {
+    color: #ff0000;
+    text-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+  }
 }
 
 .flow-label {
@@ -3974,10 +4092,15 @@ canvas.game {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-
 
 .home-page {
   position: relative;
@@ -3985,7 +4108,13 @@ canvas.game {
   display: block;
   padding: 0;
   overflow-x: hidden;
-  background: linear-gradient(180deg, #fff9e6 0%, #ffecb3 38%, #ffe082 70%, #ffd54f 100%);
+  background: linear-gradient(
+    180deg,
+    #fff9e6 0%,
+    #ffecb3 38%,
+    #ffe082 70%,
+    #ffd54f 100%
+  );
 }
 
 .home-shell {
@@ -4064,8 +4193,16 @@ canvas.game {
   z-index: 2;
   pointer-events: none;
   background:
-    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.12) 0, rgba(13, 29, 52, 0.44) 74%),
-    linear-gradient(180deg, rgba(12, 20, 38, 0.14) 0%, rgba(8, 15, 31, 0.5) 100%);
+    radial-gradient(
+      circle at 50% 42%,
+      rgba(255, 255, 255, 0.12) 0,
+      rgba(13, 29, 52, 0.44) 74%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(12, 20, 38, 0.14) 0%,
+      rgba(8, 15, 31, 0.5) 100%
+    );
 }
 
 .home-nav {
@@ -4075,7 +4212,12 @@ canvas.game {
   gap: 12px;
   padding: 10px 12px;
   border-bottom: 1px solid rgba(241, 181, 77, 0.55);
-  background: linear-gradient(90deg, rgba(12, 18, 36, 0.96) 0%, rgba(28, 33, 60, 0.96) 55%, rgba(16, 29, 51, 0.96) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(12, 18, 36, 0.96) 0%,
+    rgba(28, 33, 60, 0.96) 55%,
+    rgba(16, 29, 51, 0.96) 100%
+  );
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.34);
 }
 
@@ -4134,7 +4276,6 @@ canvas.game {
 }
 
 .home-nav-login:hover {
-
   filter: brightness(1.15);
   transform: translateY(-1px);
 }
@@ -4152,8 +4293,11 @@ canvas.game {
   padding: 13px;
   z-index: 90;
   border: 1px solid rgba(182, 204, 255, 0.26);
-  background:
-    linear-gradient(180deg, rgba(15, 25, 47, 0.98), rgba(10, 17, 31, 0.97));
+  background: linear-gradient(
+    180deg,
+    rgba(15, 25, 47, 0.98),
+    rgba(10, 17, 31, 0.97)
+  );
   box-shadow:
     0 18px 36px rgba(2, 7, 18, 0.46),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -4303,7 +4447,11 @@ canvas.game {
 .home-action-stack .flow-btn.secondary {
   color: #eef3ff;
   border: 1px solid rgba(212, 196, 255, 0.55);
-  background: linear-gradient(180deg, rgba(97, 56, 184, 0.9), rgba(63, 33, 132, 0.92));
+  background: linear-gradient(
+    180deg,
+    rgba(97, 56, 184, 0.9),
+    rgba(63, 33, 132, 0.92)
+  );
   transition: all 0.2s ease;
 }
 
@@ -4456,8 +4604,12 @@ canvas.game {
   gap: 18px;
   padding: 12px 24px;
   border-bottom: 1px solid rgba(255, 222, 110, 0.28);
-  background:
-    linear-gradient(90deg, rgba(8, 14, 29, 0.95) 0%, rgba(18, 31, 54, 0.94) 45%, rgba(15, 24, 46, 0.95) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(8, 14, 29, 0.95) 0%,
+    rgba(18, 31, 54, 0.94) 45%,
+    rgba(15, 24, 46, 0.95) 100%
+  );
   backdrop-filter: blur(16px);
 }
 
@@ -4517,8 +4669,17 @@ canvas.game {
 
 .home-hero-overlay {
   background:
-    radial-gradient(circle at 22% 18%, rgba(255, 231, 147, 0.2) 0, rgba(255, 231, 147, 0) 24%),
-    linear-gradient(180deg, rgba(7, 14, 29, 0.18) 0%, rgba(7, 14, 29, 0.62) 72%, rgba(7, 14, 29, 0.75) 100%);
+    radial-gradient(
+      circle at 22% 18%,
+      rgba(255, 231, 147, 0.2) 0,
+      rgba(255, 231, 147, 0) 24%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(7, 14, 29, 0.18) 0%,
+      rgba(7, 14, 29, 0.62) 72%,
+      rgba(7, 14, 29, 0.75) 100%
+    );
 }
 
 .home-shell {
@@ -4653,15 +4814,21 @@ canvas.game {
 .home-panel {
   border-radius: 22px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  background:
-    linear-gradient(180deg, rgba(10, 18, 35, 0.82) 0%, rgba(14, 25, 47, 0.88) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(10, 18, 35, 0.82) 0%,
+    rgba(14, 25, 47, 0.88) 100%
+  );
   padding: 22px 20px;
   box-shadow: 0 18px 28px rgba(8, 15, 31, 0.24);
 }
 
 .home-panel-status {
-  background:
-    linear-gradient(180deg, rgba(11, 28, 36, 0.84) 0%, rgba(18, 56, 58, 0.88) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(11, 28, 36, 0.84) 0%,
+    rgba(18, 56, 58, 0.88) 100%
+  );
 }
 
 .home-status-grid {
@@ -4740,9 +4907,21 @@ canvas.game {
   padding-top: 56px;
   padding-bottom: 64px;
   background:
-    radial-gradient(circle at top left, rgba(129, 212, 255, 0.12) 0, rgba(129, 212, 255, 0) 26%),
-    radial-gradient(circle at top right, rgba(129, 212, 255, 0.1) 0, rgba(129, 212, 255, 0) 18%),
-    linear-gradient(180deg, rgba(18, 31, 61, 0.98) 0%, rgba(19, 34, 68, 0.98) 100%);
+    radial-gradient(
+      circle at top left,
+      rgba(129, 212, 255, 0.12) 0,
+      rgba(129, 212, 255, 0) 26%
+    ),
+    radial-gradient(
+      circle at top right,
+      rgba(129, 212, 255, 0.1) 0,
+      rgba(129, 212, 255, 0) 18%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(18, 31, 61, 0.98) 0%,
+      rgba(19, 34, 68, 0.98) 100%
+    );
   border-top: 1px solid rgba(129, 212, 255, 0.18);
   box-shadow: inset 0 24px 40px rgba(5, 11, 24, 0.28);
 }
@@ -4796,15 +4975,27 @@ canvas.game {
 }
 
 .home-about-media-risk {
-  background: linear-gradient(140deg, rgba(18, 34, 70, 0.95) 0%, rgba(9, 15, 36, 0.96) 100%);
+  background: linear-gradient(
+    140deg,
+    rgba(18, 34, 70, 0.95) 0%,
+    rgba(9, 15, 36, 0.96) 100%
+  );
 }
 
 .home-about-media-checkpoint {
-  background: linear-gradient(140deg, rgba(18, 76, 102, 0.96) 0%, rgba(11, 22, 43, 0.98) 100%);
+  background: linear-gradient(
+    140deg,
+    rgba(18, 76, 102, 0.96) 0%,
+    rgba(11, 22, 43, 0.98) 100%
+  );
 }
 
 .home-about-media-wallet {
-  background: linear-gradient(140deg, rgba(62, 53, 126, 0.96) 0%, rgba(11, 23, 44, 0.98) 100%);
+  background: linear-gradient(
+    140deg,
+    rgba(62, 53, 126, 0.96) 0%,
+    rgba(11, 23, 44, 0.98) 100%
+  );
 }
 
 .home-about-image,
@@ -4822,8 +5013,16 @@ canvas.game {
 .home-about-media-placeholder {
   position: relative;
   background:
-    radial-gradient(circle at top, rgba(255, 255, 255, 0.14) 0, rgba(255, 255, 255, 0) 40%),
-    linear-gradient(180deg, rgba(8, 15, 30, 0.08) 0%, rgba(8, 15, 30, 0.42) 100%);
+    radial-gradient(
+      circle at top,
+      rgba(255, 255, 255, 0.14) 0,
+      rgba(255, 255, 255, 0) 40%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(8, 15, 30, 0.08) 0%,
+      rgba(8, 15, 30, 0.42) 100%
+    );
 }
 
 .home-about-media-placeholder::before,
@@ -4840,7 +5039,11 @@ canvas.game {
   height: 36%;
   border-radius: 14px;
   background:
-    linear-gradient(180deg, rgba(8, 16, 32, 0.08) 0%, rgba(8, 16, 32, 0.3) 100%),
+    linear-gradient(
+      180deg,
+      rgba(8, 16, 32, 0.08) 0%,
+      rgba(8, 16, 32, 0.3) 100%
+    ),
     repeating-linear-gradient(
       90deg,
       rgba(255, 224, 102, 0) 0 22px,
@@ -4864,14 +5067,30 @@ canvas.game {
 
 .home-about-media-placeholder-checkpoint::before {
   background:
-    radial-gradient(circle at 50% 38%, rgba(123, 247, 220, 0.32) 0, rgba(123, 247, 220, 0) 26%),
-    linear-gradient(180deg, rgba(19, 58, 74, 0.08) 0%, rgba(19, 58, 74, 0.24) 100%);
+    radial-gradient(
+      circle at 50% 38%,
+      rgba(123, 247, 220, 0.32) 0,
+      rgba(123, 247, 220, 0) 26%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(19, 58, 74, 0.08) 0%,
+      rgba(19, 58, 74, 0.24) 100%
+    );
 }
 
 .home-about-media-placeholder-wallet::before {
   background:
-    radial-gradient(circle at 50% 38%, rgba(176, 150, 255, 0.28) 0, rgba(176, 150, 255, 0) 26%),
-    linear-gradient(180deg, rgba(37, 28, 79, 0.08) 0%, rgba(37, 28, 79, 0.24) 100%);
+    radial-gradient(
+      circle at 50% 38%,
+      rgba(176, 150, 255, 0.28) 0,
+      rgba(176, 150, 255, 0) 26%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(37, 28, 79, 0.08) 0%,
+      rgba(37, 28, 79, 0.24) 100%
+    );
 }
 
 .home-about-feature-title {
@@ -4892,8 +5111,16 @@ canvas.game {
   padding-top: 30px;
   padding-bottom: 36px;
   background:
-    radial-gradient(circle at 10% 15%, rgba(255, 210, 108, 0.06) 0%, rgba(255, 210, 108, 0) 32%),
-    linear-gradient(180deg, rgba(16, 28, 55, 0.98) 0%, rgba(11, 23, 47, 0.98) 100%);
+    radial-gradient(
+      circle at 10% 15%,
+      rgba(255, 210, 108, 0.06) 0%,
+      rgba(255, 210, 108, 0) 32%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(16, 28, 55, 0.98) 0%,
+      rgba(11, 23, 47, 0.98) 100%
+    );
   border-top: 1px solid rgba(147, 214, 255, 0.16);
 }
 
@@ -4901,8 +5128,16 @@ canvas.game {
   padding-top: 36px;
   padding-bottom: 42px;
   background:
-    radial-gradient(circle at 88% 12%, rgba(133, 227, 186, 0.08) 0%, rgba(133, 227, 186, 0) 36%),
-    linear-gradient(180deg, rgba(11, 23, 47, 0.98) 0%, rgba(14, 26, 53, 0.98) 100%);
+    radial-gradient(
+      circle at 88% 12%,
+      rgba(133, 227, 186, 0.08) 0%,
+      rgba(133, 227, 186, 0) 36%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(11, 23, 47, 0.98) 0%,
+      rgba(14, 26, 53, 0.98) 100%
+    );
   border-top: 1px solid rgba(147, 214, 255, 0.14);
 }
 
@@ -4910,8 +5145,16 @@ canvas.game {
   padding-top: 30px;
   padding-bottom: 50px;
   background:
-    radial-gradient(circle at 16% 84%, rgba(164, 145, 255, 0.1) 0%, rgba(164, 145, 255, 0) 40%),
-    linear-gradient(180deg, rgba(14, 26, 53, 0.98) 0%, rgba(10, 20, 42, 0.98) 100%);
+    radial-gradient(
+      circle at 16% 84%,
+      rgba(164, 145, 255, 0.1) 0%,
+      rgba(164, 145, 255, 0) 40%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(14, 26, 53, 0.98) 0%,
+      rgba(10, 20, 42, 0.98) 100%
+    );
   border-top: 1px solid rgba(147, 214, 255, 0.14);
 }
 
@@ -4927,7 +5170,6 @@ canvas.game {
   justify-content: center;
   text-align: center;
 }
-
 
 .home-section-title {
   margin: 0;
@@ -4972,8 +5214,11 @@ canvas.game {
   padding: 20px;
   border-radius: 14px;
   border: 2px solid rgba(137, 202, 255, 0.55);
-  background:
-    linear-gradient(180deg, rgba(14, 25, 49, 0.95) 0%, rgba(19, 33, 63, 0.95) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(14, 25, 49, 0.95) 0%,
+    rgba(19, 33, 63, 0.95) 100%
+  );
   box-shadow:
     4px 4px 0 rgba(6, 13, 26, 0.46),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
@@ -5004,7 +5249,11 @@ canvas.game {
   margin-top: 18px;
   padding: 18px 20px;
   border-radius: 20px;
-  background: linear-gradient(90deg, rgba(255, 234, 161, 0.95) 0%, rgba(255, 208, 92, 0.96) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 234, 161, 0.95) 0%,
+    rgba(255, 208, 92, 0.96) 100%
+  );
   border: 1px solid rgba(116, 73, 8, 0.16);
   box-shadow: 0 14px 24px rgba(99, 75, 22, 0.12);
   color: #2f2713;
@@ -5059,15 +5308,13 @@ canvas.game {
   margin-bottom: 12px;
   display: flex;
   justify-content: center;
-  color: #81D4FF;
+  color: #81d4ff;
 }
 
 .home-social-icon svg {
   width: 24px;
   height: 24px;
 }
-
-
 
 .home-social-stat p {
   margin: 0 0 10px;
@@ -5101,8 +5348,11 @@ canvas.game {
   margin-top: 18px;
   border-radius: 14px;
   border: 2px solid rgba(137, 202, 255, 0.42);
-  background:
-    linear-gradient(180deg, rgba(12, 21, 42, 0.9) 0%, rgba(8, 17, 36, 0.9) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(12, 21, 42, 0.9) 0%,
+    rgba(8, 17, 36, 0.9) 100%
+  );
   box-shadow:
     4px 4px 0 rgba(6, 13, 26, 0.44),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -5132,7 +5382,11 @@ canvas.game {
 .home-social-card {
   padding: 20px;
   border-radius: 22px;
-  background: linear-gradient(180deg, rgba(12, 20, 39, 0.92) 0%, rgba(20, 33, 61, 0.94) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(12, 20, 39, 0.92) 0%,
+    rgba(20, 33, 61, 0.94) 100%
+  );
   border: 1px solid rgba(255, 255, 255, 0.16);
   box-shadow: 0 18px 28px rgba(8, 17, 32, 0.2);
 }
@@ -5220,7 +5474,11 @@ canvas.game {
   gap: 22px;
   padding: 24px 48px;
   border-radius: 0;
-  background: linear-gradient(180deg, rgba(10, 18, 35, 0.98) 0%, rgba(18, 30, 54, 0.98) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(10, 18, 35, 0.98) 0%,
+    rgba(18, 30, 54, 0.98) 100%
+  );
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: none;
   box-sizing: border-box;
@@ -5275,11 +5533,10 @@ canvas.game {
   background: #071127;
 }
 
-
-  .home-nav-links {
-    width: 100%;
-    overflow-x: auto;
-  }
+.home-nav-links {
+  width: 100%;
+  overflow-x: auto;
+}
 
 .dashboard-hero {
   position: relative;
@@ -5311,9 +5568,21 @@ canvas.game {
   inset: 0;
   z-index: 1;
   background:
-    radial-gradient(circle at 18% 82%, rgba(126, 204, 96, 0.22) 0%, rgba(126, 204, 96, 0) 44%),
-    radial-gradient(circle at 86% 16%, rgba(104, 123, 201, 0.22) 0%, rgba(104, 123, 201, 0) 46%),
-    linear-gradient(180deg, rgba(6, 13, 30, 0.24) 0%, rgba(6, 13, 30, 0.68) 100%);
+    radial-gradient(
+      circle at 18% 82%,
+      rgba(126, 204, 96, 0.22) 0%,
+      rgba(126, 204, 96, 0) 44%
+    ),
+    radial-gradient(
+      circle at 86% 16%,
+      rgba(104, 123, 201, 0.22) 0%,
+      rgba(104, 123, 201, 0) 46%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(6, 13, 30, 0.24) 0%,
+      rgba(6, 13, 30, 0.68) 100%
+    );
 }
 
 .dashboard-center {
@@ -5624,7 +5893,7 @@ canvas.game {
     gap: 20px;
     box-sizing: border-box;
   }
-  
+
   .home-footer-links {
     justify-content: center;
   }
@@ -5676,8 +5945,17 @@ canvas.game {
     border: 1.5px solid rgba(183, 219, 255, 0.36);
     border-radius: 16px;
     background:
-      linear-gradient(180deg, rgba(14, 20, 36, 0.14) 0%, rgba(14, 20, 36, 0.02) 100%),
-      linear-gradient(90deg, rgba(255, 196, 87, 0.08) 0%, rgba(130, 214, 255, 0.12) 50%, rgba(255, 166, 102, 0.08) 100%);
+      linear-gradient(
+        180deg,
+        rgba(14, 20, 36, 0.14) 0%,
+        rgba(14, 20, 36, 0.02) 100%
+      ),
+      linear-gradient(
+        90deg,
+        rgba(255, 196, 87, 0.08) 0%,
+        rgba(130, 214, 255, 0.12) 50%,
+        rgba(255, 166, 102, 0.08) 100%
+      );
     box-shadow:
       0 8px 18px rgba(0, 0, 0, 0.16),
       inset 0 1px 0 rgba(255, 255, 255, 0.22);
@@ -5696,7 +5974,11 @@ canvas.game {
     padding: 4px 3px;
     border: 2px solid rgba(184, 212, 255, 0.45);
     border-radius: 10px;
-    background: linear-gradient(180deg, rgba(18, 27, 49, 0.88) 0%, rgba(28, 37, 63, 0.9) 100%);
+    background: linear-gradient(
+      180deg,
+      rgba(18, 27, 49, 0.88) 0%,
+      rgba(28, 37, 63, 0.9) 100%
+    );
     box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
@@ -5704,28 +5986,53 @@ canvas.game {
     justify-content: center;
     gap: 2px;
     font-family: inherit;
-    clip-path: polygon(22% 0, 78% 0, 100% 22%, 100% 78%, 78% 100%, 22% 100%, 0 78%, 0 22%);
+    clip-path: polygon(
+      22% 0,
+      78% 0,
+      100% 22%,
+      100% 78%,
+      78% 100%,
+      22% 100%,
+      0 78%,
+      0 22%
+    );
     pointer-events: auto;
   }
 
   .play-status-mobile-ready {
     border-color: rgba(126, 244, 201, 0.55);
-    background: linear-gradient(180deg, rgba(16, 43, 48, 0.9) 0%, rgba(18, 59, 48, 0.92) 100%);
+    background: linear-gradient(
+      180deg,
+      rgba(16, 43, 48, 0.9) 0%,
+      rgba(18, 59, 48, 0.92) 100%
+    );
   }
 
   .play-status-mobile-warning {
     border-color: rgba(255, 206, 101, 0.58);
-    background: linear-gradient(180deg, rgba(72, 48, 14, 0.92) 0%, rgba(98, 61, 18, 0.92) 100%);
+    background: linear-gradient(
+      180deg,
+      rgba(72, 48, 14, 0.92) 0%,
+      rgba(98, 61, 18, 0.92) 100%
+    );
   }
 
   .play-status-mobile-error {
     border-color: rgba(255, 128, 128, 0.62);
-    background: linear-gradient(180deg, rgba(82, 24, 28, 0.94) 0%, rgba(107, 29, 29, 0.94) 100%);
+    background: linear-gradient(
+      180deg,
+      rgba(82, 24, 28, 0.94) 0%,
+      rgba(107, 29, 29, 0.94) 100%
+    );
   }
 
   .play-status-mobile-busy {
     border-color: rgba(154, 221, 255, 0.55);
-    background: linear-gradient(180deg, rgba(21, 34, 62, 0.92) 0%, rgba(26, 48, 84, 0.94) 100%);
+    background: linear-gradient(
+      180deg,
+      rgba(21, 34, 62, 0.92) 0%,
+      rgba(26, 48, 84, 0.94) 100%
+    );
   }
 
   .play-status-mobile:disabled {
@@ -5845,7 +6152,9 @@ canvas.game {
       var(--play-mobile-top-action-width)
       minmax(0, 1fr)
       var(--play-mobile-top-action-width);
-    grid-template-rows: var(--play-mobile-header-height) auto var(--play-mobile-header-height);
+    grid-template-rows: var(--play-mobile-header-height) auto var(
+        --play-mobile-header-height
+      );
     gap: var(--play-mobile-side-gap);
     align-items: start;
     justify-content: unset;
@@ -5886,8 +6195,11 @@ canvas.game {
   .play-balance-card {
     position: relative;
     border-color: rgba(214, 232, 255, 0.92);
-    background:
-      linear-gradient(180deg, rgba(20, 31, 58, 0.94) 0%, rgba(32, 48, 82, 0.94) 100%);
+    background: linear-gradient(
+      180deg,
+      rgba(20, 31, 58, 0.94) 0%,
+      rgba(32, 48, 82, 0.94) 100%
+    );
     box-shadow:
       0 0 0 1px rgba(255, 255, 255, 0.08),
       2px 3px 0 rgba(0, 0, 0, 0.3),

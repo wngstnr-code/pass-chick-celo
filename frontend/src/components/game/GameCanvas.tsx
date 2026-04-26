@@ -1,12 +1,16 @@
 import { GameBridgeClient } from "./GameBridgeClient";
 import Link from "next/link";
 import Script from "next/script";
+import { isAddress } from "viem";
+import { USDC_FAUCET_ADDRESS } from "~/lib/web3/contracts";
 
 type GameCanvasProps = {
   backgroundMode?: boolean;
 };
 
 export function GameCanvas({ backgroundMode = false }: GameCanvasProps) {
+  const hasFaucet = isAddress(USDC_FAUCET_ADDRESS);
+
   return (
     <>
       <GameBridgeClient backgroundMode={backgroundMode} />
@@ -249,9 +253,11 @@ export function GameCanvas({ backgroundMode = false }: GameCanvasProps) {
             <button id="deposit-confirm" className="primary">
               DEPOSIT NOW
             </button>
-            <button id="deposit-faucet" className="faucet">
-              CLAIM FAUCET
-            </button>
+            {hasFaucet ? (
+              <button id="deposit-faucet" className="faucet">
+                CLAIM FAUCET
+              </button>
+            ) : null}
             <Link id="deposit-manage-funds" className="manage" href="/managemoney">
               MANAGE MONEY
             </Link>
