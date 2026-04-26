@@ -32,9 +32,9 @@ export const env = {
   SUPABASE_URL: requireEnv("SUPABASE_URL", "https://placeholder.supabase.co"),
   SUPABASE_SERVICE_ROLE_KEY: requireEnv("SUPABASE_SERVICE_ROLE_KEY", "placeholder-key"),
 
-  // Blockchain (Celo first, Monad kept as temporary backward-compatible fallback)
-  CELO_RPC_URL: optionalEnv("CELO_RPC_URL", process.env.MONAD_RPC_URL ?? "https://forno.celo-sepolia.celo-testnet.org"),
-  CELO_CHAIN_ID: parseInt(optionalEnv("CELO_CHAIN_ID", process.env.MONAD_CHAIN_ID ?? "11142220"), 10),
+  // Blockchain
+  CELO_RPC_URL: optionalEnv("CELO_RPC_URL", process.env.MONAD_RPC_URL ?? "https://forno.celo.org"),
+  CELO_CHAIN_ID: parseInt(optionalEnv("CELO_CHAIN_ID", process.env.MONAD_CHAIN_ID ?? "42220"), 10),
 
   // Smart Contract
   GAME_VAULT_ADDRESS: optionalEnv("GAME_VAULT_ADDRESS", "0x0000000000000000000000000000000000000000"),

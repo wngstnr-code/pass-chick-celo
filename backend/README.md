@@ -50,8 +50,8 @@ SESSION_SECRET=your_session_secret
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
-CELO_RPC_URL=https://forno.celo-sepolia.celo-testnet.org
-CELO_CHAIN_ID=11142220
+CELO_RPC_URL=https://forno.celo.org
+CELO_CHAIN_ID=42220
 
 GAME_VAULT_ADDRESS=0x...
 GAME_SETTLEMENT_ADDRESS=0x...
@@ -67,9 +67,9 @@ MINIPAY_UNVERIFIED_AUTH_ENABLED=true
 
 ## Current Contract Wiring
 
-- `GAME_VAULT_ADDRESS=0x4Bf6D3C0dBbC14eF0C7f2a4daeD7D97418Fc5aDf`
-- `GAME_SETTLEMENT_ADDRESS=0x1eC57C9D24C4bf326d6efF4a1F16B45968e384e4`
-- `TRUST_PASSPORT_ADDRESS=0xF8Bc8B497Cbb7D08a14Ba2107F2C521c78B0eC38`
+- `GAME_VAULT_ADDRESS=` set this to your active Celo mainnet vault address
+- `GAME_SETTLEMENT_ADDRESS=` set this to your active Celo mainnet settlement address
+- `TRUST_PASSPORT_ADDRESS=` set this to your active Celo mainnet passport address
 
 The backend signer must stay in sync with the onchain signer used by:
 
