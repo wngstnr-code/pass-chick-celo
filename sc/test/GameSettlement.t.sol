@@ -13,6 +13,7 @@ import {GameSettlementV2} from "./mocks/UUPSMocks.sol";
 contract GameSettlementTest is Test {
     uint256 internal constant CLAIM_AMOUNT = 100 * 1e6;
     uint64 internal constant SESSION_EXPIRY_DELAY = 1 days;
+    uint256 internal constant FIXED_STAKE_AMOUNT = 100;
 
     bytes32 internal constant EIP712_DOMAIN_TYPEHASH =
         keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
@@ -67,15 +68,23 @@ contract GameSettlementTest is Test {
         bytes32 sessionId = keccak256("session-1");
 
         vm.prank(player);
-        settlement.startSession(sessionId, 40 * 1e6);
+        settlement.startSession(sessionId, FIXED_STAKE_AMOUNT);
 
         assertEq(settlement.activeSessionOf(player), sessionId);
-        assertEq(vault.availableBalanceOf(player), 60 * 1e6);
-        assertEq(vault.lockedBalanceOf(player), 40 * 1e6);
+        assertEq(vault.availableBalanceOf(player), CLAIM_AMOUNT - FIXED_STAKE_AMOUNT);
+        assertEq(vault.lockedBalanceOf(player), FIXED_STAKE_AMOUNT);
 
         vm.prank(player);
         vm.expectRevert(abi.encodeWithSelector(GameSettlement.SessionAlreadyActive.selector, player, sessionId));
-        settlement.startSession(keccak256("session-2"), 20 * 1e6);
+        settlement.startSession(keccak256("session-2"), FIXED_STAKE_AMOUNT);
+    }
+
+    function test_StartSessionRevertsWhenStakeIsNotFixedAmount() public {
+        _claimAndDeposit(player, CLAIM_AMOUNT);
+
+        vm.prank(player);
+        vm.expectRevert(GameSettlement.InvalidStakeAmount.selector);
+        settlement.startSession(keccak256("wrong-stake"), 1e6);
     }
 
     function test_PauseBlocksSessionStartAndSettlement() public {
@@ -93,13 +102,13 @@ contract GameSettlementTest is Test {
         settlement.unpause();
 
         vm.prank(player);
-        settlement.startSession(sessionId, 20 * 1e6);
+        settlement.startSession(sessionId, FIXED_STAKE_AMOUNT);
 
         GameSettlement.Resolution memory resolution = GameSettlement.Resolution({
             sessionId: sessionId,
             player: player,
-            stakeAmount: 20 * 1e6,
-            payoutAmount: 24 * 1e6,
+            stakeAmount: FIXED_STAKE_AMOUNT,
+            payoutAmount: 120,
             finalMultiplierBp: 12_000,
             outcome: settlement.OUTCOME_CASHED_OUT(),
             deadline: uint64(block.timestamp + 1 days)
@@ -119,13 +128,13 @@ contract GameSettlementTest is Test {
         bytes32 sessionId = keccak256("cashout-session");
 
         vm.prank(player);
-        settlement.startSession(sessionId, 50 * 1e6);
+        settlement.startSession(sessionId, FIXED_STAKE_AMOUNT);
 
         GameSettlement.Resolution memory resolution = GameSettlement.Resolution({
             sessionId: sessionId,
             player: player,
-            stakeAmount: 50 * 1e6,
-            payoutAmount: 60 * 1e6,
+            stakeAmount: FIXED_STAKE_AMOUNT,
+            payoutAmount: 120,
             finalMultiplierBp: 12_000,
             outcome: settlement.OUTCOME_CASHED_OUT(),
             deadline: uint64(block.timestamp + 1 days)
@@ -134,9 +143,9 @@ contract GameSettlementTest is Test {
         bytes memory signature = _signResolution(resolution, backendSignerPk);
         settlement.settleWithSignature(resolution, signature);
 
-        assertEq(vault.availableBalanceOf(player), 110 * 1e6);
+        assertEq(vault.availableBalanceOf(player), CLAIM_AMOUNT - FIXED_STAKE_AMOUNT + 120);
         assertEq(vault.lockedBalanceOf(player), 0);
-        assertEq(vault.treasuryBalance(), 40 * 1e6);
+        assertEq(vault.treasuryBalance(), 50 * 1e6 - 20);
         assertEq(settlement.activeSessionOf(player), bytes32(0));
     }
 
@@ -146,12 +155,12 @@ contract GameSettlementTest is Test {
         bytes32 sessionId = keccak256("crash-session");
 
         vm.prank(player);
-        settlement.startSession(sessionId, 35 * 1e6);
+        settlement.startSession(sessionId, FIXED_STAKE_AMOUNT);
 
         GameSettlement.Resolution memory resolution = GameSettlement.Resolution({
             sessionId: sessionId,
             player: player,
-            stakeAmount: 35 * 1e6,
+            stakeAmount: FIXED_STAKE_AMOUNT,
             payoutAmount: 0,
             finalMultiplierBp: 0,
             outcome: settlement.OUTCOME_CRASHED(),
@@ -161,9 +170,9 @@ contract GameSettlementTest is Test {
         bytes memory signature = _signResolution(resolution, backendSignerPk);
         settlement.settleWithSignature(resolution, signature);
 
-        assertEq(vault.availableBalanceOf(player), 65 * 1e6);
+        assertEq(vault.availableBalanceOf(player), CLAIM_AMOUNT - FIXED_STAKE_AMOUNT);
         assertEq(vault.lockedBalanceOf(player), 0);
-        assertEq(vault.treasuryBalance(), 35 * 1e6);
+        assertEq(vault.treasuryBalance(), FIXED_STAKE_AMOUNT);
         assertEq(settlement.activeSessionOf(player), bytes32(0));
     }
 
@@ -173,13 +182,13 @@ contract GameSettlementTest is Test {
         bytes32 sessionId = keccak256("wrong-signer-session");
 
         vm.prank(player);
-        settlement.startSession(sessionId, 20 * 1e6);
+        settlement.startSession(sessionId, FIXED_STAKE_AMOUNT);
 
         GameSettlement.Resolution memory resolution = GameSettlement.Resolution({
             sessionId: sessionId,
             player: player,
-            stakeAmount: 20 * 1e6,
-            payoutAmount: 24 * 1e6,
+            stakeAmount: FIXED_STAKE_AMOUNT,
+            payoutAmount: 120,
             finalMultiplierBp: 12_000,
             outcome: settlement.OUTCOME_CASHED_OUT(),
             deadline: uint64(block.timestamp + 1 days)
@@ -198,13 +207,13 @@ contract GameSettlementTest is Test {
         bytes32 sessionId = keccak256("expired-session");
 
         vm.prank(player);
-        settlement.startSession(sessionId, 20 * 1e6);
+        settlement.startSession(sessionId, FIXED_STAKE_AMOUNT);
 
         GameSettlement.Resolution memory resolution = GameSettlement.Resolution({
             sessionId: sessionId,
             player: player,
-            stakeAmount: 20 * 1e6,
-            payoutAmount: 24 * 1e6,
+            stakeAmount: FIXED_STAKE_AMOUNT,
+            payoutAmount: 120,
             finalMultiplierBp: 12_000,
             outcome: settlement.OUTCOME_CASHED_OUT(),
             deadline: uint64(block.timestamp + 1)
@@ -223,7 +232,7 @@ contract GameSettlementTest is Test {
         bytes32 sessionId = keccak256("not-expired-session");
 
         vm.prank(player);
-        settlement.startSession(sessionId, 20 * 1e6);
+        settlement.startSession(sessionId, FIXED_STAKE_AMOUNT);
 
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -239,31 +248,31 @@ contract GameSettlementTest is Test {
         bytes32 sessionId = keccak256("expired-session");
 
         vm.prank(player);
-        settlement.startSession(sessionId, 30 * 1e6);
+        settlement.startSession(sessionId, FIXED_STAKE_AMOUNT);
 
         vm.warp(block.timestamp + SESSION_EXPIRY_DELAY + 1);
         settlement.expireSession(sessionId);
 
-        assertEq(vault.availableBalanceOf(player), 70 * 1e6);
+        assertEq(vault.availableBalanceOf(player), CLAIM_AMOUNT - FIXED_STAKE_AMOUNT);
         assertEq(vault.lockedBalanceOf(player), 0);
-        assertEq(vault.treasuryBalance(), 30 * 1e6);
+        assertEq(vault.treasuryBalance(), FIXED_STAKE_AMOUNT);
         assertEq(settlement.activeSessionOf(player), bytes32(0));
     }
 
     function test_SettledSessionCannotBeSettledTwice() public {
         _claimAndDeposit(player, CLAIM_AMOUNT);
-        _fundTreasury(10 * 1e6);
+        _fundTreasury(20);
 
         bytes32 sessionId = keccak256("double-settle");
 
         vm.prank(player);
-        settlement.startSession(sessionId, 20 * 1e6);
+        settlement.startSession(sessionId, FIXED_STAKE_AMOUNT);
 
         GameSettlement.Resolution memory resolution = GameSettlement.Resolution({
             sessionId: sessionId,
             player: player,
-            stakeAmount: 20 * 1e6,
-            payoutAmount: 24 * 1e6,
+            stakeAmount: FIXED_STAKE_AMOUNT,
+            payoutAmount: 120,
             finalMultiplierBp: 12_000,
             outcome: settlement.OUTCOME_CASHED_OUT(),
             deadline: uint64(block.timestamp + 1 days)
@@ -278,17 +287,18 @@ contract GameSettlementTest is Test {
 
     function test_PayoutAboveStakeAndTreasuryReverts() public {
         _claimAndDeposit(player, CLAIM_AMOUNT);
+        _fundTreasury(50);
 
         bytes32 sessionId = keccak256("insufficient-treasury");
 
         vm.prank(player);
-        settlement.startSession(sessionId, 25 * 1e6);
+        settlement.startSession(sessionId, FIXED_STAKE_AMOUNT);
 
         GameSettlement.Resolution memory resolution = GameSettlement.Resolution({
             sessionId: sessionId,
             player: player,
-            stakeAmount: 25 * 1e6,
-            payoutAmount: 40 * 1e6,
+            stakeAmount: FIXED_STAKE_AMOUNT,
+            payoutAmount: 160,
             finalMultiplierBp: 16_000,
             outcome: settlement.OUTCOME_CASHED_OUT(),
             deadline: uint64(block.timestamp + 1 days)
@@ -296,7 +306,7 @@ contract GameSettlementTest is Test {
 
         bytes memory signature = _signResolution(resolution, backendSignerPk);
 
-        vm.expectRevert(abi.encodeWithSelector(GameVault.InsufficientTreasury.selector, 0, 15 * 1e6));
+        vm.expectRevert(abi.encodeWithSelector(GameVault.InsufficientTreasury.selector, 50, 60));
         settlement.settleWithSignature(resolution, signature);
     }
 
@@ -307,13 +317,13 @@ contract GameSettlementTest is Test {
         bytes32 sessionId = keccak256("integration-cashout");
 
         vm.prank(player);
-        settlement.startSession(sessionId, 40 * 1e6);
+        settlement.startSession(sessionId, FIXED_STAKE_AMOUNT);
 
         GameSettlement.Resolution memory resolution = GameSettlement.Resolution({
             sessionId: sessionId,
             player: player,
-            stakeAmount: 40 * 1e6,
-            payoutAmount: 48 * 1e6,
+            stakeAmount: FIXED_STAKE_AMOUNT,
+            payoutAmount: 120,
             finalMultiplierBp: 12_000,
             outcome: settlement.OUTCOME_CASHED_OUT(),
             deadline: uint64(block.timestamp + 1 days)
@@ -322,7 +332,7 @@ contract GameSettlementTest is Test {
         bytes memory signature = _signResolution(resolution, backendSignerPk);
         settlement.settleWithSignature(resolution, signature);
 
-        assertEq(vault.availableBalanceOf(player), 108 * 1e6);
+        assertEq(vault.availableBalanceOf(player), CLAIM_AMOUNT - FIXED_STAKE_AMOUNT + 120);
         assertEq(vault.lockedBalanceOf(player), 0);
     }
 
@@ -332,12 +342,12 @@ contract GameSettlementTest is Test {
         bytes32 sessionId = keccak256("integration-crash");
 
         vm.prank(otherPlayer);
-        settlement.startSession(sessionId, 30 * 1e6);
+        settlement.startSession(sessionId, FIXED_STAKE_AMOUNT);
 
         GameSettlement.Resolution memory resolution = GameSettlement.Resolution({
             sessionId: sessionId,
             player: otherPlayer,
-            stakeAmount: 30 * 1e6,
+            stakeAmount: FIXED_STAKE_AMOUNT,
             payoutAmount: 0,
             finalMultiplierBp: 0,
             outcome: settlement.OUTCOME_CRASHED(),
@@ -347,9 +357,9 @@ contract GameSettlementTest is Test {
         bytes memory signature = _signResolution(resolution, backendSignerPk);
         settlement.settleWithSignature(resolution, signature);
 
-        assertEq(vault.availableBalanceOf(otherPlayer), 70 * 1e6);
+        assertEq(vault.availableBalanceOf(otherPlayer), CLAIM_AMOUNT - FIXED_STAKE_AMOUNT);
         assertEq(vault.lockedBalanceOf(otherPlayer), 0);
-        assertEq(vault.treasuryBalance(), 30 * 1e6);
+        assertEq(vault.treasuryBalance(), FIXED_STAKE_AMOUNT);
     }
 
     function test_OwnerCanUpgradeSettlementProxy() public {

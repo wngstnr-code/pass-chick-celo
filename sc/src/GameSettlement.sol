@@ -18,6 +18,7 @@ contract GameSettlement is Initializable, OwnableUpgradeable, UUPSUpgradeable, E
     uint8 public constant OUTCOME_CRASHED = 2;
     uint256 public constant MULTIPLIER_SCALE = 10_000;
     uint64 public constant DEFAULT_SESSION_EXPIRY_DELAY = 1 days;
+    uint256 public constant FIXED_STAKE_AMOUNT = 100;
 
     bytes32 public constant RESOLUTION_TYPEHASH = keccak256(
         "Resolution(bytes32 sessionId,address player,uint256 stakeAmount,uint256 payoutAmount,uint256 finalMultiplierBp,uint8 outcome,uint64 deadline)"
@@ -123,7 +124,7 @@ contract GameSettlement is Initializable, OwnableUpgradeable, UUPSUpgradeable, E
         if (onchainSessionId == bytes32(0)) {
             revert InvalidSessionId();
         }
-        if (stakeAmount == 0) {
+        if (stakeAmount != FIXED_STAKE_AMOUNT) {
             revert InvalidStakeAmount();
         }
 
