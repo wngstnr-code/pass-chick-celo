@@ -6,8 +6,6 @@ export const FIXED_GAME_STAKE_NUMBER = 0.0001;
 export const FIXED_GAME_STAKE_DISPLAY = "0.0001";
 
 export const USDC_ADDRESS: string = process.env.NEXT_PUBLIC_USDC_ADDRESS || "";
-export const USDC_FAUCET_ADDRESS: string =
-  process.env.NEXT_PUBLIC_USDC_FAUCET_ADDRESS || "";
 export const GAME_VAULT_ADDRESS: string = process.env.NEXT_PUBLIC_GAME_VAULT_ADDRESS || "";
 export const GAME_SETTLEMENT_ADDRESS: string =
   process.env.NEXT_PUBLIC_GAME_SETTLEMENT_ADDRESS || "";
@@ -113,23 +111,6 @@ export const GAME_SETTLEMENT_ABI = [
       },
       { name: "signature", type: "bytes" },
     ],
-    outputs: [],
-  },
-] as const;
-
-export const USDC_FAUCET_ABI = [
-  {
-    type: "function",
-    name: "claimAmount",
-    stateMutability: "view",
-    inputs: [],
-    outputs: [{ name: "", type: "uint256" }],
-  },
-  {
-    type: "function",
-    name: "claim",
-    stateMutability: "nonpayable",
-    inputs: [],
     outputs: [],
   },
 ] as const;

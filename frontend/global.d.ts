@@ -31,11 +31,6 @@ type ChickenBridgeSettlementResult = {
   reason?: string;
 };
 
-type ChickenBridgeFaucetResult = {
-  txHash: string;
-  walletBalance: number;
-};
-
 type ChickenBridgeDepositResult = {
   approveTxHash?: string;
   depositTxHash: string;
@@ -160,7 +155,6 @@ type ChickenBridgeApi = {
   ) => Promise<ChickenBridgePlayerTransactionsPayload>;
   getWalletAddress: () => string;
   openDeposit: (presetAmount?: number) => void;
-  claimFaucet: () => Promise<ChickenBridgeFaucetResult>;
   depositToVault: (amount: number | string) => Promise<ChickenBridgeDepositResult>;
   startBet: (stake: number) => Promise<ChickenBridgeStartResult>;
   sendMove: (direction: string) => void;

@@ -31,8 +31,6 @@ import {
   FIXED_GAME_STAKE_UNITS,
   USDC_ADDRESS,
   USDC_DECIMALS,
-  USDC_FAUCET_ABI,
-  USDC_FAUCET_ADDRESS,
   hasGameContractConfig,
   hasPassportContractConfig,
 } from "~/lib/web3/contracts";
@@ -419,11 +417,6 @@ export function GameBridgeClient({
   }, [backgroundMode]);
 
   useEffect(() => {
-    const depositFaucetButton = document.getElementById("deposit-faucet");
-    if (depositFaucetButton instanceof HTMLElement) {
-      depositFaucetButton.style.display = isAddress(USDC_FAUCET_ADDRESS) ? "" : "none";
-    }
-
     if (backgroundMode) {
       window.__CHICKEN_GAME_BRIDGE__ = {
         backgroundMode: true,
@@ -465,9 +458,6 @@ export function GameBridgeClient({
               detail: { amount: presetAmount },
             }),
           );
-        },
-        claimFaucet: async () => {
-          throw new Error("Faucet is disabled in background mode.");
         },
         depositToVault: async () => {
           throw new Error("Background mode does not support deposit.");
@@ -1370,32 +1360,6 @@ export function GameBridgeClient({
             detail: { amount: presetAmount },
           }),
         );
-      },
-      claimFaucet: async () => {
-        const playerAddress = await requireOnchainWallet();
-        if (!isAddress(USDC_FAUCET_ADDRESS)) {
-          throw new Error("Faucet is disabled in this build.");
-        }
-
-        let txHash: string;
-        try {
-          txHash = await writeAndConfirm({
-            address: USDC_FAUCET_ADDRESS as Address,
-            abi: USDC_FAUCET_ABI,
-            functionName: "claim",
-          });
-        } catch (error) {
-          throw new Error(
-            toUserFacingWalletError(error, "Failed to claim faucet.", {
-              userRejectedMessage: "Faucet claim was canceled in wallet.",
-            }),
-          );
-        }
-
-        return {
-          txHash,
-          walletBalance: await readWalletUsdcBalance(playerAddress),
-        };
       },
       depositToVault: async (amountInput: number | string) => {
         const playerAddress = await requireOnchainWallet();

@@ -30,9 +30,7 @@ export function useBackendDepositFlow(): DepositFlowViewModel {
     canTransact: false,
     hasValidContracts: hasBackendConfig,
     usdcAddress: "",
-    faucetAddress: "",
     vaultAddress: "",
-    faucetClaimAmountDisplay: "-",
     walletBalanceDisplay: "-",
     allowanceDisplay: "-",
     availableBalanceDisplay: "-",
@@ -41,27 +39,18 @@ export function useBackendDepositFlow(): DepositFlowViewModel {
     isAllowanceFetching: false,
     isVaultBalanceFetching: false,
     needsApproval: false,
-    faucetTxHash: "",
-    faucetTxUrl: "",
     approveTxHash: "",
     approveTxUrl: "",
     depositTxHash: "",
     depositTxUrl: "",
     withdrawTxHash: "",
     withdrawTxUrl: "",
-    isFaucetBusy: false,
     isApproveBusy: false,
     isDepositBusy: false,
     isWithdrawBusy: false,
-    disableFaucetButton: true,
     disableApproveButton: true,
     disableDepositButton: true,
     disableWithdrawButton: true,
-    onClaimFaucet: async () => {
-      throw new Error(
-        `Backend mode is not implemented yet. Set endpoint in ${BACKEND_API_URL || "frontend/.env.local"}.`
-      );
-    },
     onApprove: async () => {
       throw new Error(
         `Backend mode is not implemented yet. Set endpoint in ${BACKEND_API_URL || "frontend/.env.local"}.`

@@ -2381,7 +2381,6 @@ function initBettingUI() {
   const depositModal = document.getElementById("deposit-modal");
   const depositAmount = document.getElementById("deposit-amount");
   const depositConfirm = document.getElementById("deposit-confirm");
-  const depositFaucet = document.getElementById("deposit-faucet");
   const depositManageFunds = document.getElementById("deposit-manage-funds");
   const depositStatus = document.getElementById("deposit-status");
   const depositWalletBalance = document.getElementById(
@@ -3283,57 +3282,6 @@ function initBettingUI() {
       void refreshDepositBalanceCard();
       closeDepositModal();
     } else setDepositStatus("Deposit failed.", true);
-  });
-
-  depositFaucet?.addEventListener("click", async () => {
-    if (hasLiveBridge()) {
-      const bridge = getBridge();
-      if (!bridge?.claimFaucet) {
-        setDepositStatus("Faucet bridge is not ready yet.", true);
-        return;
-      }
-
-      setDepositBusy(true);
-      setDepositButtonState("CLAIMING...", true);
-      setDepositStatus("Claiming faucet...");
-      dispatchPlayStatus({
-        message: "CLAIMING FAUCET...",
-        tone: "busy",
-        sticky: true,
-      });
-      try {
-        await bridge.claimFaucet();
-        setDepositStatus("Faucet claimed. Continue to deposit.");
-        dispatchPlayStatus({
-          message: "FAUCET CLAIMED.",
-          tone: "ready",
-          durationMs: 2600,
-        });
-        setDepositButtonState("DEPOSIT", false);
-      } catch (error) {
-        const message = formatBridgeError(
-          error,
-          "Faucet claim failed.",
-          "Faucet claim was canceled in wallet.",
-        );
-        setDepositStatus(message, true);
-        dispatchPlayStatus({
-          message,
-          tone: "error",
-          durationMs: 4200,
-        });
-        setDepositButtonState("DEPOSIT", false);
-      } finally {
-        setDepositBusy(false);
-        void loadBalance();
-        void refreshDepositBalanceCard();
-      }
-      return;
-    }
-
-    deposit(100);
-    void refreshDepositBalanceCard();
-    setDepositStatus("Mock +$100 added.");
   });
 
   document.getElementById("deposit-close")?.addEventListener("click", () => {

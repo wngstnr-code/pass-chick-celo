@@ -64,7 +64,6 @@ export function ManageMoneyPage() {
   const returnLabel = "HOME";
   const walletPreset = readQuickAmount(flow.walletBalanceDisplay);
   const vaultPreset = readQuickAmount(flow.availableBalanceDisplay);
-  const hasFaucet = Boolean(flow.faucetAddress);
 
   const quickAmounts = useMemo<QuickAmountPreset[]>(() => {
     const presets: QuickAmountPreset[] = [
@@ -89,11 +88,6 @@ export function ManageMoneyPage() {
     () =>
       [
         {
-          label: "Latest Faucet",
-          hash: flow.faucetTxHash,
-          url: flow.faucetTxUrl,
-        },
-        {
           label: "Latest Approve",
           hash: flow.approveTxHash,
           url: flow.approveTxUrl,
@@ -108,17 +102,14 @@ export function ManageMoneyPage() {
           hash: flow.withdrawTxHash,
           url: flow.withdrawTxUrl,
         },
-      ].filter((item) => item.hash && (item.label !== "Latest Faucet" || hasFaucet)),
+      ].filter((item) => item.hash),
     [
       flow.approveTxHash,
       flow.approveTxUrl,
       flow.depositTxHash,
       flow.depositTxUrl,
-      flow.faucetTxHash,
-      flow.faucetTxUrl,
       flow.withdrawTxHash,
       flow.withdrawTxUrl,
-      hasFaucet,
     ],
   );
 
@@ -133,14 +124,6 @@ export function ManageMoneyPage() {
   async function handleWithdrawClick() {
     try {
       await flow.onWithdraw();
-    } catch {
-      // Error sudah ditangani oleh flow.
-    }
-  }
-
-  async function handleFaucetClick() {
-    try {
-      await flow.onClaimFaucet();
     } catch {
       // Error sudah ditangani oleh flow.
     }
@@ -163,11 +146,6 @@ export function ManageMoneyPage() {
           <div className="money-head-top">
             <p className="flow-eyebrow">CHICKEN VAULT</p>
             <div className="money-head-badges">
-              {hasFaucet ? (
-                <span className="money-head-badge">
-                  FAUCET {flow.faucetClaimAmountDisplay} USDC
-                </span>
-              ) : null}
               <span
                 className={`money-head-badge ${
                   flow.needsApproval
@@ -272,16 +250,6 @@ export function ManageMoneyPage() {
             </button>
 
             <div className="money-secondary-actions">
-              {hasFaucet ? (
-                <button
-                  className="flow-btn money-secondary-btn money-faucet-btn"
-                  type="button"
-                  disabled={flow.disableFaucetButton}
-                  onClick={handleFaucetClick}
-                >
-                  {flow.isFaucetBusy ? "MINTING..." : "MINT FAUCET"}
-                </button>
-              ) : null}
               <button
                 className="flow-btn money-secondary-btn money-withdraw-btn"
                 type="button"

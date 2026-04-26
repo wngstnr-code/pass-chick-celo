@@ -51,7 +51,6 @@ NEXT_PUBLIC_CELO_NATIVE_SYMBOL=CELO
 NEXT_PUBLIC_CELO_NATIVE_DECIMALS=18
 
 NEXT_PUBLIC_USDC_ADDRESS=0xcebA9300f2b948710d2653dD7B07f33A8B32118C
-NEXT_PUBLIC_USDC_FAUCET_ADDRESS=
 NEXT_PUBLIC_GAME_VAULT_ADDRESS=0x...
 NEXT_PUBLIC_GAME_SETTLEMENT_ADDRESS=0x...
 NEXT_PUBLIC_TRUST_PASSPORT_ADDRESS=0x...
@@ -69,7 +68,6 @@ NEXT_PUBLIC_REOWN_PROJECT_ID=your_reown_project_id
 ## Current Contract Wiring
 
 - `NEXT_PUBLIC_USDC_ADDRESS=` set this to your active Celo USDC address
-- `NEXT_PUBLIC_USDC_FAUCET_ADDRESS=` optional, only fill this for Sepolia/demo builds
 - `NEXT_PUBLIC_GAME_VAULT_ADDRESS=` set this to your active Celo vault address
 - `NEXT_PUBLIC_GAME_SETTLEMENT_ADDRESS=` set this to your active Celo settlement address
 - `NEXT_PUBLIC_TRUST_PASSPORT_ADDRESS=` set this to your active Celo passport address

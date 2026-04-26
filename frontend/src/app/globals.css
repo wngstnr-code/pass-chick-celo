@@ -563,13 +563,6 @@ canvas.game {
   gap: 10px;
 }
 
-.modal-actions button.faucet {
-  background: linear-gradient(180deg, #78f2ce 0%, #1fa987 100%);
-  color: #083a2f;
-  border: 3px solid #1a5f4c;
-  box-shadow: 3px 5px 0 rgba(0, 0, 0, 0.35);
-}
-
 .modal-actions a.manage {
   background: linear-gradient(180deg, #ffe39f 0%, #f0bc58 100%);
   color: #3e2a08;
@@ -577,16 +570,9 @@ canvas.game {
   box-shadow: 3px 5px 0 rgba(0, 0, 0, 0.35);
 }
 
-.modal-actions button.faucet:active,
 .modal-actions a.manage:active {
   transform: translate(2px, 3px);
   box-shadow: 1px 2px 0 rgba(0, 0, 0, 0.35);
-}
-
-.modal-actions button.faucet:disabled {
-  opacity: 0.5;
-  filter: grayscale(0.45) saturate(0.7);
-  cursor: not-allowed;
 }
 
 .modal-actions a.manage[aria-disabled="true"] {
@@ -3773,7 +3759,7 @@ canvas.game {
 
 .money-secondary-actions {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 8px;
   margin-bottom: 2px;
 }
@@ -3783,12 +3769,6 @@ canvas.game {
   justify-content: center;
   padding: 8px 10px;
   font-size: 10px;
-}
-
-.money-faucet-btn {
-  background: linear-gradient(180deg, #7df3bf 0%, #33ad78 100%);
-  color: #09281e;
-  border: 1px solid rgba(173, 255, 222, 0.32);
 }
 
 .money-withdraw-btn {

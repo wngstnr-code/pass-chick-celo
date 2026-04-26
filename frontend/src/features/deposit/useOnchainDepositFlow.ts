@@ -13,8 +13,6 @@ import {
 import { useWallet } from "~/components/web3/WalletProvider";
 import {
   ERC20_ABI,
-  USDC_FAUCET_ABI,
-  USDC_FAUCET_ADDRESS,
   GAME_VAULT_ABI,
   GAME_VAULT_ADDRESS,
   USDC_ADDRESS,
@@ -109,7 +107,6 @@ export function useOnchainDepositFlow(): DepositFlowViewModel {
   });
   const [statusMessage, setStatusMessage] = useState("");
   const [uiError, setUiError] = useState("");
-  const [handledFaucetHash, setHandledFaucetHash] = useState("");
   const [handledApproveHash, setHandledApproveHash] = useState("");
   const [handledDepositHash, setHandledDepositHash] = useState("");
   const [handledWithdrawHash, setHandledWithdrawHash] = useState("");
@@ -117,14 +114,10 @@ export function useOnchainDepositFlow(): DepositFlowViewModel {
   const isConnected = Boolean(account);
   const ownerAddress = isAddress(account) ? (account as Address) : undefined;
   const usdcAddress = isAddress(USDC_ADDRESS) ? (USDC_ADDRESS as Address) : undefined;
-  const faucetAddress = isAddress(USDC_FAUCET_ADDRESS)
-    ? (USDC_FAUCET_ADDRESS as Address)
-    : undefined;
   const vaultAddress = isAddress(GAME_VAULT_ADDRESS)
     ? (GAME_VAULT_ADDRESS as Address)
     : undefined;
   const hasValidContracts = hasDepositContractConfig();
-  const hasFaucet = Boolean(faucetAddress);
   const canTransact = Boolean(
     isConnected && isCeloChain && ownerAddress && usdcAddress && vaultAddress
   );
@@ -137,19 +130,6 @@ export function useOnchainDepositFlow(): DepositFlowViewModel {
       return null;
     }
   }, [amount]);
-
-  const {
-    data: faucetClaimAmountData,
-    refetch: refetchFaucetClaimAmount,
-    isFetching: isFaucetClaimAmountFetching,
-  } = useReadContract({
-    address: faucetAddress || ZERO_ADDRESS,
-    abi: USDC_FAUCET_ABI,
-    functionName: "claimAmount",
-    query: {
-      enabled: canTransact && hasFaucet,
-    },
-  });
 
   const {
     data: walletBalanceData,
@@ -208,13 +188,6 @@ export function useOnchainDepositFlow(): DepositFlowViewModel {
   });
 
   const {
-    writeContractAsync: faucetClaimAsync,
-    data: faucetTxHash,
-    isPending: isFaucetSubmitting,
-    error: faucetWriteError,
-  } = useWriteContract();
-
-  const {
     writeContractAsync: approveAsync,
     data: approveTxHash,
     isPending: isApproveSubmitting,
@@ -234,14 +207,6 @@ export function useOnchainDepositFlow(): DepositFlowViewModel {
     isPending: isWithdrawSubmitting,
     error: withdrawWriteError,
   } = useWriteContract();
-
-  const {
-    isLoading: isFaucetConfirming,
-    isSuccess: isFaucetConfirmed,
-    error: faucetConfirmError,
-  } = useWaitForTransactionReceipt({
-    hash: faucetTxHash as Hash | undefined,
-  });
 
   const {
     isLoading: isApproveConfirming,
@@ -268,27 +233,10 @@ export function useOnchainDepositFlow(): DepositFlowViewModel {
   });
 
   const allowance = allowanceData ?? 0n;
-  const faucetClaimAmount = faucetClaimAmountData ?? 0n;
   const walletBalance = walletBalanceData ?? 0n;
   const availableBalance = availableBalanceData ?? 0n;
   const lockedBalance = lockedBalanceData ?? 0n;
   const needsApproval = Boolean(parsedAmount && allowance < parsedAmount);
-
-  useEffect(() => {
-    if (!isFaucetConfirmed || !faucetTxHash || faucetTxHash === handledFaucetHash) return;
-
-    setHandledFaucetHash(faucetTxHash);
-    setUiError("");
-    setStatusMessage("Faucet claim confirmed on-chain.");
-    void refetchWalletBalance();
-    void refetchFaucetClaimAmount();
-  }, [
-    faucetTxHash,
-    handledFaucetHash,
-    isFaucetConfirmed,
-    refetchFaucetClaimAmount,
-    refetchWalletBalance,
-  ]);
 
   useEffect(() => {
     if (!isApproveConfirmed || !approveTxHash || approveTxHash === handledApproveHash) return;
@@ -345,13 +293,9 @@ export function useOnchainDepositFlow(): DepositFlowViewModel {
       toUserFacingError(depositWriteError, "") ||
       toUserFacingError(depositConfirmError, "") ||
       toUserFacingError(withdrawWriteError, "") ||
-      toUserFacingError(withdrawConfirmError, "") ||
-      toUserFacingError(faucetWriteError, "") ||
-      toUserFacingError(faucetConfirmError, "")
+      toUserFacingError(withdrawConfirmError, "")
     );
   }, [
-    faucetConfirmError,
-    faucetWriteError,
     approveConfirmError,
     approveWriteError,
     depositConfirmError,
@@ -360,36 +304,6 @@ export function useOnchainDepositFlow(): DepositFlowViewModel {
     withdrawConfirmError,
     withdrawWriteError,
   ]);
-
-  async function onClaimFaucet() {
-    if (!hasFaucet) {
-      setUiError("Faucet is disabled in this build.");
-      return;
-    }
-    if (!canTransact || !faucetAddress) {
-      setUiError("Make sure wallet is connected, on the supported Celo network, and faucet config is valid.");
-      return;
-    }
-
-    setUiError("");
-    setStatusMessage("");
-
-    try {
-      await faucetClaimAsync({
-        address: faucetAddress,
-        abi: USDC_FAUCET_ABI,
-        functionName: "claim",
-      });
-    } catch (faucetError) {
-      setUiError(
-        toUserFacingError(
-          faucetError,
-          "Faucet claim failed.",
-          "Faucet claim was canceled in wallet.",
-        ),
-      );
-    }
-  }
 
   async function onApprove() {
     if (!canTransact || !usdcAddress || !vaultAddress) {
@@ -511,26 +425,21 @@ export function useOnchainDepositFlow(): DepositFlowViewModel {
     }
   }
 
-  const faucetTxUrl = faucetTxHash ? explorerTxUrl(faucetTxHash) : "";
   const approveTxUrl = approveTxHash ? explorerTxUrl(approveTxHash) : "";
   const depositTxUrl = depositTxHash ? explorerTxUrl(depositTxHash) : "";
   const withdrawTxUrl = withdrawTxHash ? explorerTxUrl(withdrawTxHash) : "";
 
-  const isFaucetBusy = isFaucetSubmitting || isFaucetConfirming;
   const isApproveBusy = isApproveSubmitting || isApproveConfirming;
   const isDepositBusy = isDepositSubmitting || isDepositConfirming;
   const isWithdrawBusy = isWithdrawSubmitting || isWithdrawConfirming;
-  const disableFaucetButton =
-    !hasFaucet || !canTransact || isFaucetBusy || isApproveBusy || isDepositBusy || isWithdrawBusy;
   const disableApproveButton =
-    !canTransact || !parsedAmount || !needsApproval || isFaucetBusy || isApproveBusy || isDepositBusy || isWithdrawBusy;
+    !canTransact || !parsedAmount || !needsApproval || isApproveBusy || isDepositBusy || isWithdrawBusy;
   const disableDepositButton =
-    !canTransact || !parsedAmount || isFaucetBusy || isApproveBusy || isDepositBusy || isWithdrawBusy;
+    !canTransact || !parsedAmount || isApproveBusy || isDepositBusy || isWithdrawBusy;
   const disableWithdrawButton =
     !canTransact ||
     !parsedAmount ||
     parsedAmount > availableBalance ||
-    isFaucetBusy ||
     isApproveBusy ||
     isDepositBusy ||
     isWithdrawBusy;
@@ -547,14 +456,7 @@ export function useOnchainDepositFlow(): DepositFlowViewModel {
     canTransact,
     hasValidContracts,
     usdcAddress: USDC_ADDRESS,
-    faucetAddress: USDC_FAUCET_ADDRESS,
     vaultAddress: GAME_VAULT_ADDRESS,
-    faucetClaimAmountDisplay:
-      hasFaucet
-        ? isFaucetClaimAmountFetching
-          ? "loading..."
-          : formatUsdcAmount(faucetClaimAmount)
-        : "-",
     walletBalanceDisplay: isWalletBalanceFetching ? "loading..." : formatUsdcAmount(walletBalance),
     allowanceDisplay: isAllowanceFetching ? "loading..." : formatUsdcAmount(allowance),
     availableBalanceDisplay:
@@ -564,23 +466,18 @@ export function useOnchainDepositFlow(): DepositFlowViewModel {
     isAllowanceFetching,
     isVaultBalanceFetching: isAvailableBalanceFetching || isLockedBalanceFetching,
     needsApproval,
-    faucetTxHash: faucetTxHash || "",
-    faucetTxUrl,
     approveTxHash: approveTxHash || "",
     approveTxUrl,
     depositTxHash: depositTxHash || "",
     depositTxUrl,
     withdrawTxHash: withdrawTxHash || "",
     withdrawTxUrl,
-    isFaucetBusy,
     isApproveBusy,
     isDepositBusy,
     isWithdrawBusy,
-    disableFaucetButton,
     disableApproveButton,
     disableDepositButton,
     disableWithdrawButton,
-    onClaimFaucet,
     onApprove,
     onDeposit,
     onWithdraw,
