@@ -5,6 +5,7 @@ The Pass Chick backend powers the server-authoritative game flow and authenticat
 Main responsibilities:
 
 - SIWE authentication
+- MiniPay-compatible session bootstrap
 - session cookie management
 - real-time gameplay over Socket.io
 - settlement signing
@@ -61,13 +62,14 @@ BACKEND_PRIVATE_KEY=0x...
 SETTLEMENT_SIGNATURE_TTL_SECONDS=86400
 PASSPORT_SIGNATURE_TTL_SECONDS=900
 PASSPORT_VALIDITY_SECONDS=2592000
+MINIPAY_UNVERIFIED_AUTH_ENABLED=true
 ```
 
 ## Current Contract Wiring
 
-- `GAME_VAULT_ADDRESS=0x45B893d50dfDC750Ab8d3696cAC5556A697153ca`
-- `GAME_SETTLEMENT_ADDRESS=0xD1873ddd24Cf2C41192e11a87CC7d3026557dab8`
-- `TRUST_PASSPORT_ADDRESS=0x31029a59E40eb062f3C5D33AdFF8561F0549199e`
+- `GAME_VAULT_ADDRESS=0x4Bf6D3C0dBbC14eF0C7f2a4daeD7D97418Fc5aDf`
+- `GAME_SETTLEMENT_ADDRESS=0x1eC57C9D24C4bf326d6efF4a1F16B45968e384e4`
+- `TRUST_PASSPORT_ADDRESS=0xF8Bc8B497Cbb7D08a14Ba2107F2C521c78B0eC38`
 
 The backend signer must stay in sync with the onchain signer used by:
 
@@ -80,8 +82,14 @@ Auth:
 
 - `GET /auth/nonce`
 - `POST /auth/verify`
+- `POST /auth/minipay`
 - `POST /auth/logout`
 - `GET /auth/me`
+
+MiniPay note:
+
+- `POST /auth/minipay` is a wallet-session bootstrap for MiniPay where message signing is unavailable.
+- Keep `MINIPAY_UNVERIFIED_AUTH_ENABLED=true` only for the MiniPay-compatible flow you intend to support.
 
 Game and player:
 

@@ -414,10 +414,50 @@ export function WalletProvider({ children }: WalletProviderProps) {
       return false;
     }
     if (isMiniPay) {
-      setBackendAuthError(
-        "MiniPay does not support the message-signing flow used by this backend yet.",
-      );
-      return false;
+      if (!isCeloChain) {
+        setBackendAuthError(
+          "MiniPay must be in Celo Sepolia testnet mode before game data can sync.",
+        );
+        return false;
+      }
+
+      setBackendAuthLoading(true);
+      setBackendAuthError("");
+
+      try {
+        await backendPost<{ success: boolean; address: string }>("/auth/minipay", {
+          address: account,
+          chainId: chainId || CELO_CHAIN.chainIdDecimal || 11142220,
+          walletProvider: "minipay",
+        });
+
+        const nextAddress = account.toLowerCase();
+        setBackendAddress(nextAddress);
+        backendSessionRef.current = {
+          inFlight: null,
+          lastCheckedAt: Date.now(),
+          lastResult: true,
+          account: nextAddress,
+        };
+        return true;
+      } catch (authError) {
+        setBackendAddress("");
+        backendSessionRef.current = {
+          inFlight: null,
+          lastCheckedAt: Date.now(),
+          lastResult: false,
+          account: normalizedAccount,
+        };
+        setBackendAuthError(
+          toUserFacingWalletError(
+            authError,
+            "Failed to create a MiniPay backend session.",
+          ),
+        );
+        return false;
+      } finally {
+        setBackendAuthLoading(false);
+      }
     }
 
     setBackendAuthLoading(true);

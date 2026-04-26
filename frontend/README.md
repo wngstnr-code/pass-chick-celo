@@ -25,6 +25,7 @@ The Pass Chick frontend is a Next.js application that handles:
 ## MiniPay Status
 
 - The frontend now detects MiniPay and auto-reads the injected wallet in the browser.
+- MiniPay users now create a backend session without SIWE message signing, because MiniPay does not support that flow.
 - This build now targets Celo Sepolia. You still need to provide Celo Sepolia addresses for the game contracts in `frontend/.env.local` or `frontend/.env`.
 - For local MiniPay testing, run `npm run dev`, expose port `3000` with `ngrok http 3000`, then load the HTTPS URL from MiniPay's Test Page.
 
@@ -43,11 +44,11 @@ Example values live in `frontend/.env.example`.
 
 ```bash
 NEXT_PUBLIC_CELO_CHAIN_ID=0xaa044c
-NEXT_PUBLIC_CELO_CHAIN_NAME=Celo Sepolia Testnet
+NEXT_PUBLIC_CELO_CHAIN_NAME=Celo Sepolia
 NEXT_PUBLIC_CELO_RPC_URLS=https://forno.celo-sepolia.celo-testnet.org
 NEXT_PUBLIC_CELO_EXPLORER_URLS=https://celo-sepolia.blockscout.com
 NEXT_PUBLIC_CELO_NATIVE_NAME=CELO
-NEXT_PUBLIC_CELO_NATIVE_SYMBOL=S-CELO
+NEXT_PUBLIC_CELO_NATIVE_SYMBOL=CELO
 NEXT_PUBLIC_CELO_NATIVE_DECIMALS=18
 
 NEXT_PUBLIC_USDC_ADDRESS=0x...

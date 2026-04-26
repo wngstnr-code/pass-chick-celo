@@ -51,6 +51,10 @@ export const env = {
   SETTLEMENT_SIGNATURE_TTL_SECONDS: parseInt(optionalEnv("SETTLEMENT_SIGNATURE_TTL_SECONDS", "86400"), 10),
   PASSPORT_SIGNATURE_TTL_SECONDS: parseInt(optionalEnv("PASSPORT_SIGNATURE_TTL_SECONDS", "900"), 10),
   PASSPORT_VALIDITY_SECONDS: parseInt(optionalEnv("PASSPORT_VALIDITY_SECONDS", "2592000"), 10),
+
+  // MiniPay auth
+  MINIPAY_UNVERIFIED_AUTH_ENABLED:
+    optionalEnv("MINIPAY_UNVERIFIED_AUTH_ENABLED", "true").toLowerCase() === "true",
 } as const;
 
 // Log config status on import (non-sensitive)

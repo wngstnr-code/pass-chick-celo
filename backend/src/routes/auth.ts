@@ -1,5 +1,6 @@
-import { Router } from "express";
+import { type Response, Router } from "express";
 import { SiweMessage } from "siwe";
+import { isAddress } from "viem";
 import {
   generateNonce,
   consumeNonce,
@@ -12,6 +13,42 @@ import { env } from "../config/env.js";
 import { supabase } from "../config/supabase.js";
 
 const router = Router();
+
+function persistSessionCookie(res: Response) {
+  return (token: string) => {
+    res.cookie(SESSION_COOKIE, token, {
+      httpOnly: true,
+      secure: env.NODE_ENV === "production",
+      sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 24 * 60 * 60 * 1000,
+      path: "/",
+    });
+  };
+}
+
+async function ensurePlayerRecord(walletAddress: string) {
+  const { error: dbError } = await supabase
+    .from("players")
+    .upsert({ wallet_address: walletAddress }, { onConflict: "wallet_address" });
+
+  if (dbError) {
+    console.error("❌ Supabase Error (player-upsert):", {
+      message: dbError.message,
+      details: dbError.details,
+      hint: dbError.hint,
+      code: dbError.code,
+    });
+  }
+}
+
+function createAuthenticatedSession(
+  res: Response,
+  walletAddress: string,
+) {
+  const token = generateSessionToken();
+  createSession(token, walletAddress);
+  persistSessionCookie(res)(token);
+}
 
 /**
  * GET /auth/nonce
@@ -55,44 +92,78 @@ router.post("/verify", async (req, res) => {
 
     const walletAddress = result.data.address.toLowerCase();
 
-    // Upsert player in database
-    const { error: dbError } = await supabase
-      .from("players")
-      .upsert(
-        { wallet_address: walletAddress },
-        { onConflict: "wallet_address" }
-      );
-
-    if (dbError) {
-      console.error("❌ Supabase Error (player-upsert):", {
-        message: dbError.message,
-        details: dbError.details,
-        hint: dbError.hint,
-        code: dbError.code,
-      });
-      // Don't block auth for DB errors in hackathon, but we'll know it failed.
-    }
-
-    // Create session
-    const token = generateSessionToken();
-    createSession(token, walletAddress);
-
-    // Set HttpOnly cookie
-    res.cookie(SESSION_COOKIE, token, {
-      httpOnly: true,
-      secure: env.NODE_ENV === "production",
-      sameSite: env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      path: "/",
-    });
+    await ensurePlayerRecord(walletAddress);
+    createAuthenticatedSession(res, walletAddress);
 
     res.json({
       success: true,
       address: walletAddress,
+      authMethod: "siwe",
     });
   } catch (err) {
     console.error("❌ Auth verify error:", err);
     res.status(500).json({ error: "Authentication failed." });
+  }
+});
+
+/**
+ * POST /auth/minipay
+ * Create a session for an injected MiniPay wallet without message signing.
+ *
+ * Body: { address: string, chainId?: number, walletProvider?: string }
+ */
+router.post("/minipay", async (req, res) => {
+  try {
+    if (!env.MINIPAY_UNVERIFIED_AUTH_ENABLED) {
+      res.status(403).json({
+        error: "MiniPay auth is disabled on this backend.",
+      });
+      return;
+    }
+
+    const {
+      address,
+      chainId,
+      walletProvider,
+    }: {
+      address?: string;
+      chainId?: number;
+      walletProvider?: string;
+    } = req.body ?? {};
+
+    if (!address || !isAddress(address)) {
+      res.status(400).json({ error: "Missing or invalid wallet address." });
+      return;
+    }
+
+    if (
+      chainId !== undefined &&
+      Number.isFinite(chainId) &&
+      Number(chainId) !== env.CELO_CHAIN_ID
+    ) {
+      res.status(400).json({
+        error: `MiniPay auth requires Celo chain ${env.CELO_CHAIN_ID}.`,
+      });
+      return;
+    }
+
+    if (walletProvider && walletProvider.toLowerCase() !== "minipay") {
+      res.status(400).json({ error: "Unsupported MiniPay wallet provider." });
+      return;
+    }
+
+    const walletAddress = address.toLowerCase();
+    await ensurePlayerRecord(walletAddress);
+    createAuthenticatedSession(res, walletAddress);
+
+    res.json({
+      success: true,
+      address: walletAddress,
+      authMethod: "minipay",
+    });
+  } catch (err) {
+    console.error("❌ MiniPay auth error:", err);
+    res.status(500).json({ error: "MiniPay authentication failed." });
   }
 });
 
