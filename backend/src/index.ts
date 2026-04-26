@@ -12,6 +12,7 @@ import leaderboardRoutes from "./routes/leaderboard.js";
 import playerRoutes from "./routes/player.js";
 import passportRoutes from "./routes/passport.js";
 import { getActiveGameCount } from "./services/gameState.js";
+import { readBackendSignerHealth } from "./services/opsHealth.js";
 
 /**
  * ════════════════════════════════════════════════════════════
@@ -60,12 +61,24 @@ app.use(cookieParser());
 // ── Routes ───────────────────────────────────────────────────
 
 // Health check
-app.get("/health", (_req, res) => {
-  res.json({
-    status: "ok",
-    timestamp: new Date().toISOString(),
-    activeGames: getActiveGameCount(),
-  });
+app.get("/health", async (_req, res) => {
+  try {
+    const backendSigner = await readBackendSignerHealth();
+
+    res.json({
+      status: backendSigner.healthy ? "ok" : "degraded",
+      timestamp: new Date().toISOString(),
+      activeGames: getActiveGameCount(),
+      backendSigner,
+    });
+  } catch (error) {
+    console.error("❌ Failed to build health response:", error);
+    res.status(500).json({
+      status: "error",
+      timestamp: new Date().toISOString(),
+      activeGames: getActiveGameCount(),
+    });
+  }
 });
 
 // Auth routes (SIWE)
@@ -114,6 +127,20 @@ httpServer.listen(env.PORT, "0.0.0.0", () => {
     console.error("⚠️  Blockchain listener failed to start:", err);
     console.log("   Backend continues without blockchain events.");
   });
+
+  void readBackendSignerHealth()
+    .then((backendSigner) => {
+      const celoDisplay = backendSigner.balanceCelo.toFixed(6);
+      console.log(`⛽ Backend signer: ${backendSigner.relayerAddress} | ${celoDisplay} CELO`);
+      if (!backendSigner.healthy) {
+        console.log(
+          `⚠️  Backend signer balance is below recommended minimum (${backendSigner.minRecommendedCelo} CELO).`
+        );
+      }
+    })
+    .catch((error: unknown) => {
+      console.error("⚠️  Failed to read backend signer health:", error);
+    });
 });
 
 // ── Graceful Shutdown ────────────────────────────────────────

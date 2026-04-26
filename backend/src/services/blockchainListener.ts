@@ -1,17 +1,18 @@
-import { createPublicClient, http, type Address, parseAbi } from "viem";
+import { createPublicClient, http, parseAbiItem, type Address } from "viem";
 import { env } from "../config/env.js";
 import { supabase } from "../config/supabase.js";
 
-const GAME_VAULT_ABI = parseAbi([
-  "event Deposited(address indexed account, uint256 amount)",
-  "event Withdrawn(address indexed account, uint256 amount)",
-  "event TreasuryFunded(address indexed funder, uint256 amount)",
-]);
-
-const GAME_SETTLEMENT_ABI = parseAbi([
-  "event SessionStarted(address indexed player, bytes32 indexed sessionId, uint256 stakeAmount)",
-  "event SessionSettled(address indexed player, bytes32 indexed sessionId, uint8 outcome, uint256 stakeAmount, uint256 payoutAmount, uint256 finalMultiplierBp)",
-]);
+const DEPOSITED_EVENT = parseAbiItem("event Deposited(address indexed account, uint256 amount)");
+const WITHDRAWN_EVENT = parseAbiItem("event Withdrawn(address indexed account, uint256 amount)");
+const TREASURY_FUNDED_EVENT = parseAbiItem(
+  "event TreasuryFunded(address indexed funder, uint256 amount)"
+);
+const SESSION_STARTED_EVENT = parseAbiItem(
+  "event SessionStarted(address indexed player, bytes32 indexed sessionId, uint256 stakeAmount)"
+);
+const SESSION_SETTLED_EVENT = parseAbiItem(
+  "event SessionSettled(address indexed player, bytes32 indexed sessionId, uint8 outcome, uint256 stakeAmount, uint256 payoutAmount, uint256 finalMultiplierBp)"
+);
 
 type TransactionType =
   | "DEPOSIT"
@@ -20,7 +21,11 @@ type TransactionType =
   | "SESSION_STARTED"
   | "SESSION_SETTLED";
 
+const EVENT_POLL_INTERVAL_MS = 15_000;
+
 let publicClient: ReturnType<typeof createPublicClient> | null = null;
+let isListening = false;
+let lastProcessedBlock: bigint | null = null;
 
 function getPublicClient() {
   if (!publicClient) {
@@ -63,7 +68,149 @@ async function logTransaction(params: {
   }
 }
 
-let isListening = false;
+async function syncVaultEventRange(vaultAddress: Address, fromBlock: bigint, toBlock: bigint) {
+  const client = getPublicClient();
+
+  const [deposits, withdrawals, treasuryFunded] = await Promise.all([
+    client.getLogs({
+      address: vaultAddress,
+      event: DEPOSITED_EVENT,
+      fromBlock,
+      toBlock,
+    }),
+    client.getLogs({
+      address: vaultAddress,
+      event: WITHDRAWN_EVENT,
+      fromBlock,
+      toBlock,
+    }),
+    client.getLogs({
+      address: vaultAddress,
+      event: TREASURY_FUNDED_EVENT,
+      fromBlock,
+      toBlock,
+    }),
+  ]);
+
+  for (const log of deposits) {
+    const { account, amount } = log.args;
+    if (!account || amount === undefined) continue;
+    await ensurePlayer(account);
+    if (log.transactionHash) {
+      await logTransaction({
+        txHash: log.transactionHash,
+        walletAddress: account,
+        type: "DEPOSIT",
+        amount: Number(amount) / 1e6,
+      });
+    }
+  }
+
+  for (const log of withdrawals) {
+    const { account, amount } = log.args;
+    if (!account || amount === undefined) continue;
+    await ensurePlayer(account);
+    if (log.transactionHash) {
+      await logTransaction({
+        txHash: log.transactionHash,
+        walletAddress: account,
+        type: "WITHDRAW",
+        amount: Number(amount) / 1e6,
+      });
+    }
+  }
+
+  for (const log of treasuryFunded) {
+    const { funder, amount } = log.args;
+    if (!funder || amount === undefined) continue;
+    await ensurePlayer(funder);
+    if (log.transactionHash) {
+      await logTransaction({
+        txHash: log.transactionHash,
+        walletAddress: funder,
+        type: "TREASURY_FUNDED",
+        amount: Number(amount) / 1e6,
+      });
+    }
+  }
+}
+
+async function syncSettlementEventRange(settlementAddress: Address, fromBlock: bigint, toBlock: bigint) {
+  const client = getPublicClient();
+
+  const [sessionStarted, sessionSettled] = await Promise.all([
+    client.getLogs({
+      address: settlementAddress,
+      event: SESSION_STARTED_EVENT,
+      fromBlock,
+      toBlock,
+    }),
+    client.getLogs({
+      address: settlementAddress,
+      event: SESSION_SETTLED_EVENT,
+      fromBlock,
+      toBlock,
+    }),
+  ]);
+
+  for (const log of sessionStarted) {
+    const { player, sessionId, stakeAmount } = log.args;
+    if (!player || !sessionId || stakeAmount === undefined) continue;
+
+    await ensurePlayer(player);
+
+    if (log.transactionHash) {
+      await logTransaction({
+        txHash: log.transactionHash,
+        walletAddress: player,
+        type: "SESSION_STARTED",
+        amount: Number(stakeAmount) / 1e6,
+        onchainSessionId: sessionId.toLowerCase(),
+      });
+    }
+  }
+
+  for (const log of sessionSettled) {
+    const { player, sessionId, outcome, payoutAmount, finalMultiplierBp } = log.args;
+    if (!player || !sessionId || outcome === undefined || payoutAmount === undefined || finalMultiplierBp === undefined) {
+      continue;
+    }
+
+    await ensurePlayer(player);
+
+    await supabase
+      .from("game_sessions")
+      .update({
+        settlement_tx_hash: log.transactionHash ?? null,
+        final_multiplier: Number(finalMultiplierBp) / 10_000,
+        payout_amount: Number(payoutAmount) / 1e6,
+        status: outcome === 1 ? "CASHED_OUT" : "CRASHED",
+      })
+      .eq("wallet_address", player.toLowerCase())
+      .eq("onchain_session_id", sessionId.toLowerCase());
+
+    if (log.transactionHash) {
+      await logTransaction({
+        txHash: log.transactionHash,
+        walletAddress: player,
+        type: "SESSION_SETTLED",
+        amount: Number(payoutAmount) / 1e6,
+        onchainSessionId: sessionId.toLowerCase(),
+      });
+    }
+  }
+}
+
+async function syncBlockRange(vaultAddress: Address, settlementAddress: Address, fromBlock: bigint, toBlock: bigint) {
+  if (fromBlock > toBlock) {
+    return;
+  }
+
+  await Promise.all([
+    syncVaultEventRange(vaultAddress, fromBlock, toBlock),
+    syncSettlementEventRange(settlementAddress, fromBlock, toBlock),
+  ]);
+}
 
 export async function startBlockchainListener(): Promise<void> {
   if (isListening) {
@@ -88,136 +235,27 @@ export async function startBlockchainListener(): Promise<void> {
     console.log(`   Watching vault: ${vaultAddress}`);
     console.log(`   Watching settlement: ${settlementAddress}`);
 
-    client.watchContractEvent({
-      address: vaultAddress,
-      abi: GAME_VAULT_ABI,
-      eventName: "Deposited",
-      onLogs: async (logs) => {
-        for (const log of logs) {
-          const { account, amount } = log.args as { account: string; amount: bigint };
-          await ensurePlayer(account);
-          if (log.transactionHash) {
-            await logTransaction({
-              txHash: log.transactionHash,
-              walletAddress: account,
-              type: "DEPOSIT",
-              amount: Number(amount) / 1e6,
-            });
-          }
+    const currentBlock = await client.getBlockNumber();
+    lastProcessedBlock = currentBlock;
+
+    client.watchBlockNumber({
+      poll: true,
+      pollingInterval: EVENT_POLL_INTERVAL_MS,
+      emitOnBegin: false,
+      emitMissed: true,
+      onBlockNumber: async (blockNumber) => {
+        const fromBlock = lastProcessedBlock === null ? blockNumber : lastProcessedBlock + 1n;
+        lastProcessedBlock = blockNumber;
+
+        try {
+          await syncBlockRange(vaultAddress, settlementAddress, fromBlock, blockNumber);
+        } catch (error) {
+          console.error("❌ Blockchain sync error:", error);
         }
       },
-      onError: (error) => console.error("❌ Deposited listener error:", error),
-    });
-
-    client.watchContractEvent({
-      address: vaultAddress,
-      abi: GAME_VAULT_ABI,
-      eventName: "Withdrawn",
-      onLogs: async (logs) => {
-        for (const log of logs) {
-          const { account, amount } = log.args as { account: string; amount: bigint };
-          await ensurePlayer(account);
-          if (log.transactionHash) {
-            await logTransaction({
-              txHash: log.transactionHash,
-              walletAddress: account,
-              type: "WITHDRAW",
-              amount: Number(amount) / 1e6,
-            });
-          }
-        }
+      onError: (error) => {
+        console.error("❌ Block watcher error:", error);
       },
-      onError: (error) => console.error("❌ Withdrawn listener error:", error),
-    });
-
-    client.watchContractEvent({
-      address: vaultAddress,
-      abi: GAME_VAULT_ABI,
-      eventName: "TreasuryFunded",
-      onLogs: async (logs) => {
-        for (const log of logs) {
-          const { funder, amount } = log.args as { funder: string; amount: bigint };
-          await ensurePlayer(funder);
-          if (log.transactionHash) {
-            await logTransaction({
-              txHash: log.transactionHash,
-              walletAddress: funder,
-              type: "TREASURY_FUNDED",
-              amount: Number(amount) / 1e6,
-            });
-          }
-        }
-      },
-      onError: (error) => console.error("❌ TreasuryFunded listener error:", error),
-    });
-
-    client.watchContractEvent({
-      address: settlementAddress,
-      abi: GAME_SETTLEMENT_ABI,
-      eventName: "SessionStarted",
-      onLogs: async (logs) => {
-        for (const log of logs) {
-          const { player, sessionId, stakeAmount } = log.args as {
-            player: string;
-            sessionId: string;
-            stakeAmount: bigint;
-          };
-
-          await ensurePlayer(player);
-
-          if (log.transactionHash) {
-            await logTransaction({
-              txHash: log.transactionHash,
-              walletAddress: player,
-              type: "SESSION_STARTED",
-              amount: Number(stakeAmount) / 1e6,
-              onchainSessionId: sessionId.toLowerCase(),
-            });
-          }
-        }
-      },
-      onError: (error) => console.error("❌ SessionStarted listener error:", error),
-    });
-
-    client.watchContractEvent({
-      address: settlementAddress,
-      abi: GAME_SETTLEMENT_ABI,
-      eventName: "SessionSettled",
-      onLogs: async (logs) => {
-        for (const log of logs) {
-          const { player, sessionId, outcome, payoutAmount, finalMultiplierBp } = log.args as {
-            player: string;
-            sessionId: string;
-            outcome: number;
-            payoutAmount: bigint;
-            finalMultiplierBp: bigint;
-          };
-
-          await ensurePlayer(player);
-
-          await supabase
-            .from("game_sessions")
-            .update({
-              settlement_tx_hash: log.transactionHash ?? null,
-              final_multiplier: Number(finalMultiplierBp) / 10_000,
-              payout_amount: Number(payoutAmount) / 1e6,
-              status: outcome === 1 ? "CASHED_OUT" : "CRASHED",
-            })
-            .eq("wallet_address", player.toLowerCase())
-            .eq("onchain_session_id", sessionId.toLowerCase());
-
-          if (log.transactionHash) {
-            await logTransaction({
-              txHash: log.transactionHash,
-              walletAddress: player,
-              type: "SESSION_SETTLED",
-              amount: Number(payoutAmount) / 1e6,
-              onchainSessionId: sessionId.toLowerCase(),
-            });
-          }
-        }
-      },
-      onError: (error) => console.error("❌ SessionSettled listener error:", error),
     });
 
     isListening = true;
