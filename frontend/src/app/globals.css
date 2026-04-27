@@ -5833,14 +5833,25 @@ canvas.game {
     --play-mobile-header-height: 36px;
     --play-mobile-menu-size: 38px;
     --play-mobile-side-gap: 8px;
+    --play-mobile-rail-max-width: 368px;
+    --play-mobile-rail-width: min(
+      calc(
+        100vw - 12px - var(--play-mobile-safe-left) -
+          var(--play-mobile-safe-right)
+      ),
+      var(--play-mobile-rail-max-width)
+    );
+    --play-mobile-safe-left: env(safe-area-inset-left, 0px);
+    --play-mobile-safe-right: env(safe-area-inset-right, 0px);
+    --play-mobile-safe-top: env(safe-area-inset-top, 0px);
   }
 
   .play-mobile-header-rail {
     position: fixed;
-    top: 4px;
+    top: calc(4px + var(--play-mobile-safe-top));
     left: 50%;
     transform: translateX(-50%);
-    width: min(calc(100vw - 12px), 368px);
+    width: var(--play-mobile-rail-width);
     height: 38px;
     border: 1.5px solid rgba(183, 219, 255, 0.36);
     border-radius: 16px;
@@ -5862,10 +5873,19 @@ canvas.game {
 
   .play-status-mobile {
     position: fixed;
-    top: calc(var(--play-mobile-edge-gutter) + (var(--play-mobile-header-height) * 2) + (var(--play-mobile-side-gap) * 2));
-    left: var(--play-mobile-edge-gutter);
+    top: calc(
+      var(--play-mobile-edge-gutter) + var(--play-mobile-safe-top) +
+        (var(--play-mobile-header-height) * 2) +
+        (var(--play-mobile-side-gap) * 2)
+    );
+    left: calc(
+      (
+          100vw - var(--play-mobile-safe-left) - var(--play-mobile-safe-right) -
+            var(--play-mobile-rail-width)
+        ) / 2 + var(--play-mobile-safe-left)
+    );
     z-index: 27;
-    width: var(--play-mobile-top-action-width);
+    width: min(var(--play-mobile-top-action-width), calc(50vw - 16px));
     min-height: var(--play-mobile-header-height);
     padding: 4px 8px;
     border: 2px solid rgba(184, 212, 255, 0.45);
@@ -5881,6 +5901,7 @@ canvas.game {
     gap: 1px;
     font-family: inherit;
     pointer-events: auto;
+    overflow: hidden;
   }
 
   .play-status-mobile-ready {
@@ -5964,9 +5985,14 @@ canvas.game {
 
   .play-wallet-menu {
     position: fixed;
-    top: var(--play-mobile-edge-gutter);
-    left: var(--play-mobile-edge-gutter);
-    width: var(--play-mobile-top-action-width);
+    top: calc(var(--play-mobile-edge-gutter) + var(--play-mobile-safe-top));
+    left: calc(
+      (
+          100vw - var(--play-mobile-safe-left) - var(--play-mobile-safe-right) -
+            var(--play-mobile-rail-width)
+        ) / 2 + var(--play-mobile-safe-left)
+    );
+    width: min(var(--play-mobile-top-action-width), calc(50vw - 16px));
     pointer-events: auto;
   }
 
@@ -5982,8 +6008,13 @@ canvas.game {
 
   .play-menu-container {
     position: fixed;
-    top: var(--play-mobile-edge-gutter);
-    right: var(--play-mobile-edge-gutter);
+    top: calc(var(--play-mobile-edge-gutter) + var(--play-mobile-safe-top));
+    right: calc(
+      (
+          100vw - var(--play-mobile-safe-left) - var(--play-mobile-safe-right) -
+            var(--play-mobile-rail-width)
+        ) / 2 + var(--play-mobile-safe-right)
+    );
     left: auto;
     width: var(--play-mobile-right-action-width);
     display: block;
@@ -6022,23 +6053,51 @@ canvas.game {
 
   .play-nav-deposit {
     position: fixed;
-    top: calc(var(--play-mobile-edge-gutter) + var(--play-mobile-header-height) + var(--play-mobile-side-gap));
-    left: var(--play-mobile-edge-gutter);
+    top: calc(
+      var(--play-mobile-edge-gutter) + var(--play-mobile-safe-top) +
+        var(--play-mobile-header-height) + var(--play-mobile-side-gap)
+    );
+    left: calc(
+      (
+          100vw - var(--play-mobile-safe-left) - var(--play-mobile-safe-right) -
+            var(--play-mobile-rail-width)
+        ) / 2 + var(--play-mobile-safe-left)
+    );
     right: auto;
-    width: var(--play-mobile-top-action-width);
+    width: min(var(--play-mobile-top-action-width), calc(50vw - 16px));
     min-height: var(--play-nav-control-height);
     padding: 0 10px;
     font-size: 9px;
     letter-spacing: 0.45px;
     pointer-events: auto;
     border-radius: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .play-nav-deposit[data-menu-open="true"],
+  .play-status-mobile[data-menu-open="true"] {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
   }
 
   #top-bar {
     position: fixed;
-    top: var(--play-mobile-edge-gutter);
-    left: var(--play-mobile-edge-gutter);
-    right: var(--play-mobile-edge-gutter);
+    top: calc(var(--play-mobile-edge-gutter) + var(--play-mobile-safe-top));
+    left: calc(
+      (
+          100vw - var(--play-mobile-safe-left) - var(--play-mobile-safe-right) -
+            var(--play-mobile-rail-width)
+        ) / 2 + var(--play-mobile-safe-left)
+    );
+    right: calc(
+      (
+          100vw - var(--play-mobile-safe-left) - var(--play-mobile-safe-right) -
+            var(--play-mobile-rail-width)
+        ) / 2 + var(--play-mobile-safe-right)
+    );
     width: auto;
     transform: none;
     display: grid;
@@ -6173,17 +6232,32 @@ canvas.game {
   }
 
   .play-wallet-menu {
-    left: 6px;
+    left: calc(
+      (
+          100vw - var(--play-mobile-safe-left) - var(--play-mobile-safe-right) -
+            var(--play-mobile-rail-width)
+        ) / 2 + var(--play-mobile-safe-left)
+    );
     width: 84px;
   }
 
   .play-menu-container {
-    right: 6px;
+    right: calc(
+      (
+          100vw - var(--play-mobile-safe-left) - var(--play-mobile-safe-right) -
+            var(--play-mobile-rail-width)
+        ) / 2 + var(--play-mobile-safe-right)
+    );
     width: 84px;
   }
 
   .play-nav-deposit {
-    left: 6px;
+    left: calc(
+      (
+          100vw - var(--play-mobile-safe-left) - var(--play-mobile-safe-right) -
+            var(--play-mobile-rail-width)
+        ) / 2 + var(--play-mobile-safe-left)
+    );
     width: 84px;
     padding: 0 8px;
   }
@@ -6191,12 +6265,27 @@ canvas.game {
   .play-status-mobile {
     width: 84px;
     min-height: 30px;
-    left: 6px;
+    left: calc(
+      (
+          100vw - var(--play-mobile-safe-left) - var(--play-mobile-safe-right) -
+            var(--play-mobile-rail-width)
+        ) / 2 + var(--play-mobile-safe-left)
+    );
   }
 
   #top-bar {
-    left: 6px;
-    right: 6px;
+    left: calc(
+      (
+          100vw - var(--play-mobile-safe-left) - var(--play-mobile-safe-right) -
+            var(--play-mobile-rail-width)
+        ) / 2 + var(--play-mobile-safe-left)
+    );
+    right: calc(
+      (
+          100vw - var(--play-mobile-safe-left) - var(--play-mobile-safe-right) -
+            var(--play-mobile-rail-width)
+        ) / 2 + var(--play-mobile-safe-right)
+    );
     grid-template-columns: 84px minmax(0, 1fr) 84px;
     gap: 8px;
   }
@@ -6267,6 +6356,9 @@ canvas.game {
   #top-bar-center>.stat-card:not(.timer-card) {
     width: 180px;
     height: var(--play-mobile-header-height);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
     min-height: var(--play-mobile-header-height);
     max-height: var(--play-mobile-header-height);
     padding: 0;
@@ -6276,6 +6368,9 @@ canvas.game {
 
   .play-balance-card {
     box-sizing: border-box;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
     padding: 0;
   }
 

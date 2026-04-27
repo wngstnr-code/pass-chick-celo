@@ -817,6 +817,7 @@ export function PlayTopNav() {
         <button
           type="button"
           className={`play-nav-deposit${isDepositBusy ? " busy" : ""}`}
+          data-menu-open={isMenuOpen ? "true" : "false"}
           onClick={openDepositModal}
           disabled={isDepositBusy}
         >
@@ -827,6 +828,7 @@ export function PlayTopNav() {
           className={`play-status-mobile play-status-mobile-${statusTone}${
             isMobileStatusClickable ? " play-status-mobile-clickable" : ""
           }`}
+          data-menu-open={isMenuOpen ? "true" : "false"}
           onClick={() => {
             if (!isMobileStatusClickable) return;
             void onStatusActionClick();
