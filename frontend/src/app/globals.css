@@ -15,13 +15,11 @@ body {
 body {
   display: block;
   font-family: "Press Start 2P", cursive;
-  background: linear-gradient(
-    180deg,
-    #6ec6ff 0%,
-    #a9dcff 45%,
-    #ffd6a5 80%,
-    #ffb08a 100%
-  );
+  background: linear-gradient(180deg,
+      #6ec6ff 0%,
+      #a9dcff 45%,
+      #ffd6a5 80%,
+      #ffb08a 100%);
 }
 
 canvas.game {
@@ -88,6 +86,7 @@ canvas.game {
   from {
     background: rgba(20, 30, 55, 0.7);
   }
+
   to {
     background: rgba(180, 40, 40, 0.85);
   }
@@ -470,12 +469,15 @@ canvas.game {
   display: inline-block;
   border: 1px solid rgba(0, 0, 0, 0.3);
 }
+
 .dot-green {
   background: #7aa21d;
 }
+
 .dot-yellow {
   background: #f4a261;
 }
+
 .dot-red {
   background: #e63946;
 }
@@ -853,7 +855,8 @@ canvas.game {
     padding: 6px 10px;
     font-size: 1em;
     letter-spacing: 1px;
-    display: none; /* hide in mobile, bet-cp shows it */
+    display: none;
+    /* hide in mobile, bet-cp shows it */
   }
 
   .hud-row {
@@ -1071,11 +1074,9 @@ canvas.game {
   z-index: 5;
   pointer-events: none;
   background:
-    radial-gradient(
-      circle at 50% 0%,
+    radial-gradient(circle at 50% 0%,
       rgba(12, 18, 36, 0.2) 0%,
-      rgba(12, 18, 36, 0) 45%
-    ),
+      rgba(12, 18, 36, 0) 45%),
     linear-gradient(180deg, rgba(8, 12, 24, 0.18) 0%, rgba(8, 12, 24, 0) 24%);
 }
 
@@ -1125,11 +1126,9 @@ canvas.game {
   min-width: 140px;
   flex-shrink: 0;
   border-color: rgba(255, 255, 255, 0.8);
-  background: linear-gradient(
-    180deg,
-    rgba(18, 28, 52, 0.84) 0%,
-    rgba(29, 41, 74, 0.84) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(18, 28, 52, 0.84) 0%,
+      rgba(29, 41, 74, 0.84) 100%);
   backdrop-filter: blur(2px);
 }
 
@@ -1669,11 +1668,9 @@ canvas.game {
   border: 2px solid rgba(184, 212, 255, 0.9);
   background:
     linear-gradient(140deg, rgba(255, 255, 255, 0.05) 0%, transparent 38%),
-    linear-gradient(
-      180deg,
+    linear-gradient(180deg,
       rgba(16, 24, 44, 0.94) 0%,
-      rgba(30, 42, 72, 0.94) 100%
-    );
+      rgba(30, 42, 72, 0.94) 100%);
   box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.4);
   color: #edf5ff;
   overflow: hidden;
@@ -1860,7 +1857,8 @@ canvas.game {
   left: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
-  display: flex; /* Remove !important here */
+  display: flex;
+  /* Remove !important here */
   align-items: center !important;
   justify-content: center !important;
   background: rgba(4, 8, 20, 0.62) !important;
@@ -2007,11 +2005,9 @@ canvas.game {
 }
 
 .play-wallet-trigger.connected {
-  background: linear-gradient(
-    180deg,
-    rgba(16, 24, 44, 0.9) 0%,
-    rgba(30, 42, 72, 0.9) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(16, 24, 44, 0.9) 0%,
+      rgba(30, 42, 72, 0.9) 100%);
   border: 2px solid rgba(184, 212, 255, 0.9);
   color: #f3f8ff;
 }
@@ -2039,11 +2035,9 @@ canvas.game {
   width: 100%;
   border-radius: 12px;
   border: 2px solid rgba(184, 212, 255, 0.9);
-  background: linear-gradient(
-    180deg,
-    rgba(16, 24, 44, 0.95) 0%,
-    rgba(30, 42, 72, 0.95) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(16, 24, 44, 0.95) 0%,
+      rgba(30, 42, 72, 0.95) 100%);
   box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.4);
   padding: 8px;
   box-sizing: border-box;
@@ -2580,11 +2574,9 @@ canvas.game {
   border-radius: 12px;
   padding: 6px 10px;
   border: 2px solid rgba(184, 212, 255, 0.45);
-  background: linear-gradient(
-    180deg,
-    rgba(18, 27, 49, 0.88) 0%,
-    rgba(28, 37, 63, 0.9) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(18, 27, 49, 0.88) 0%,
+      rgba(28, 37, 63, 0.9) 100%);
   box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.34);
   display: flex;
   align-items: center;
@@ -2640,11 +2632,9 @@ canvas.game {
 
 .play-status-ready {
   border-color: rgba(118, 247, 191, 0.55);
-  background: linear-gradient(
-    180deg,
-    rgba(14, 42, 35, 0.9) 0%,
-    rgba(18, 58, 46, 0.92) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(14, 42, 35, 0.9) 0%,
+      rgba(18, 58, 46, 0.92) 100%);
 }
 
 .play-status-ready .play-status-text {
@@ -2653,20 +2643,16 @@ canvas.game {
 
 .play-status-info {
   border-color: rgba(151, 206, 255, 0.55);
-  background: linear-gradient(
-    180deg,
-    rgba(18, 36, 60, 0.9) 0%,
-    rgba(24, 50, 82, 0.92) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(18, 36, 60, 0.9) 0%,
+      rgba(24, 50, 82, 0.92) 100%);
 }
 
 .play-status-warning {
   border-color: rgba(255, 214, 122, 0.62);
-  background: linear-gradient(
-    180deg,
-    rgba(64, 40, 10, 0.92) 0%,
-    rgba(88, 54, 14, 0.94) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(64, 40, 10, 0.92) 0%,
+      rgba(88, 54, 14, 0.94) 100%);
 }
 
 .play-status-warning .play-status-text {
@@ -2681,11 +2667,9 @@ canvas.game {
 
 .play-status-error {
   border-color: rgba(255, 134, 134, 0.68);
-  background: linear-gradient(
-    180deg,
-    rgba(73, 23, 23, 0.94) 0%,
-    rgba(94, 26, 26, 0.96) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(73, 23, 23, 0.94) 0%,
+      rgba(94, 26, 26, 0.96) 100%);
 }
 
 .play-status-error .play-status-text {
@@ -2699,11 +2683,9 @@ canvas.game {
 
 .play-status-busy {
   border-color: rgba(160, 232, 205, 0.55);
-  background: linear-gradient(
-    180deg,
-    rgba(16, 50, 41, 0.92) 0%,
-    rgba(20, 63, 50, 0.94) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(16, 50, 41, 0.92) 0%,
+      rgba(20, 63, 50, 0.94) 100%);
   animation: ui-pulse 0.9s ease-in-out infinite alternate;
 }
 
@@ -2715,6 +2697,7 @@ canvas.game {
   from {
     filter: brightness(1);
   }
+
   to {
     filter: brightness(1.16);
   }
@@ -2863,6 +2846,7 @@ canvas.game {
 ============================================================ */
 
 @media (max-width: 700px) and (orientation: portrait) {
+
   /* --- Top bar (score, balance, timer, bet) --- */
   #top-bar {
     top: 8px;
@@ -3477,23 +3461,19 @@ canvas.game {
   justify-content: center;
   padding: 24px;
   box-sizing: border-box;
-  background: linear-gradient(
-    180deg,
-    #7ec9ff 0%,
-    #9cddff 38%,
-    #b7e8ff 70%,
-    #d8f5ff 100%
-  );
+  background: linear-gradient(180deg,
+      #7ec9ff 0%,
+      #9cddff 38%,
+      #b7e8ff 70%,
+      #d8f5ff 100%);
 }
 
 .flow-card {
   width: min(680px, 100%);
-  background: linear-gradient(
-    180deg,
-    rgba(12, 18, 36, 0.96) 0%,
-    rgba(28, 33, 60, 0.96) 55%,
-    rgba(16, 29, 51, 0.96) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(12, 18, 36, 0.96) 0%,
+      rgba(28, 33, 60, 0.96) 55%,
+      rgba(16, 29, 51, 0.96) 100%);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(241, 181, 77, 0.55);
   border-radius: 16px;
@@ -3547,16 +3527,12 @@ canvas.game {
   inset: 0;
   z-index: 1;
   background:
-    radial-gradient(
-      circle at 20% 18%,
+    radial-gradient(circle at 20% 18%,
       rgba(255, 222, 119, 0.12) 0%,
-      rgba(255, 222, 119, 0) 28%
-    ),
-    linear-gradient(
-      180deg,
+      rgba(255, 222, 119, 0) 28%),
+    linear-gradient(180deg,
       rgba(7, 14, 29, 0.34) 0%,
-      rgba(7, 14, 29, 0.76) 100%
-    );
+      rgba(7, 14, 29, 0.76) 100%);
 }
 
 .money-card {
@@ -3972,11 +3948,13 @@ canvas.game {
 }
 
 @keyframes decay-scary-blink {
+
   0%,
   100% {
     color: #ff9b9b;
     text-shadow: none;
   }
+
   50% {
     color: #ff0000;
     text-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
@@ -4103,6 +4081,7 @@ canvas.game {
     opacity: 0;
     transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -4115,13 +4094,11 @@ canvas.game {
   display: block;
   padding: 0;
   overflow-x: hidden;
-  background: linear-gradient(
-    180deg,
-    #fff9e6 0%,
-    #ffecb3 38%,
-    #ffe082 70%,
-    #ffd54f 100%
-  );
+  background: linear-gradient(180deg,
+      #fff9e6 0%,
+      #ffecb3 38%,
+      #ffe082 70%,
+      #ffd54f 100%);
 }
 
 .home-shell {
@@ -4200,16 +4177,12 @@ canvas.game {
   z-index: 2;
   pointer-events: none;
   background:
-    radial-gradient(
-      circle at 50% 42%,
+    radial-gradient(circle at 50% 42%,
       rgba(255, 255, 255, 0.12) 0,
-      rgba(13, 29, 52, 0.44) 74%
-    ),
-    linear-gradient(
-      180deg,
+      rgba(13, 29, 52, 0.44) 74%),
+    linear-gradient(180deg,
       rgba(12, 20, 38, 0.14) 0%,
-      rgba(8, 15, 31, 0.5) 100%
-    );
+      rgba(8, 15, 31, 0.5) 100%);
 }
 
 .home-nav {
@@ -4219,12 +4192,10 @@ canvas.game {
   gap: 12px;
   padding: 10px 12px;
   border-bottom: 1px solid rgba(241, 181, 77, 0.55);
-  background: linear-gradient(
-    90deg,
-    rgba(12, 18, 36, 0.96) 0%,
-    rgba(28, 33, 60, 0.96) 55%,
-    rgba(16, 29, 51, 0.96) 100%
-  );
+  background: linear-gradient(90deg,
+      rgba(12, 18, 36, 0.96) 0%,
+      rgba(28, 33, 60, 0.96) 55%,
+      rgba(16, 29, 51, 0.96) 100%);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.34);
 }
 
@@ -4300,11 +4271,9 @@ canvas.game {
   padding: 13px;
   z-index: 90;
   border: 1px solid rgba(182, 204, 255, 0.26);
-  background: linear-gradient(
-    180deg,
-    rgba(15, 25, 47, 0.98),
-    rgba(10, 17, 31, 0.97)
-  );
+  background: linear-gradient(180deg,
+      rgba(15, 25, 47, 0.98),
+      rgba(10, 17, 31, 0.97));
   box-shadow:
     0 18px 36px rgba(2, 7, 18, 0.46),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -4454,11 +4423,9 @@ canvas.game {
 .home-action-stack .flow-btn.secondary {
   color: #eef3ff;
   border: 1px solid rgba(212, 196, 255, 0.55);
-  background: linear-gradient(
-    180deg,
-    rgba(97, 56, 184, 0.9),
-    rgba(63, 33, 132, 0.92)
-  );
+  background: linear-gradient(180deg,
+      rgba(97, 56, 184, 0.9),
+      rgba(63, 33, 132, 0.92));
   transition: all 0.2s ease;
 }
 
@@ -4611,12 +4578,10 @@ canvas.game {
   gap: 18px;
   padding: 12px 24px;
   border-bottom: 1px solid rgba(255, 222, 110, 0.28);
-  background: linear-gradient(
-    90deg,
-    rgba(8, 14, 29, 0.95) 0%,
-    rgba(18, 31, 54, 0.94) 45%,
-    rgba(15, 24, 46, 0.95) 100%
-  );
+  background: linear-gradient(90deg,
+      rgba(8, 14, 29, 0.95) 0%,
+      rgba(18, 31, 54, 0.94) 45%,
+      rgba(15, 24, 46, 0.95) 100%);
   backdrop-filter: blur(16px);
 }
 
@@ -4676,17 +4641,13 @@ canvas.game {
 
 .home-hero-overlay {
   background:
-    radial-gradient(
-      circle at 22% 18%,
+    radial-gradient(circle at 22% 18%,
       rgba(255, 231, 147, 0.2) 0,
-      rgba(255, 231, 147, 0) 24%
-    ),
-    linear-gradient(
-      180deg,
+      rgba(255, 231, 147, 0) 24%),
+    linear-gradient(180deg,
       rgba(7, 14, 29, 0.18) 0%,
       rgba(7, 14, 29, 0.62) 72%,
-      rgba(7, 14, 29, 0.75) 100%
-    );
+      rgba(7, 14, 29, 0.75) 100%);
 }
 
 .home-shell {
@@ -4778,7 +4739,7 @@ canvas.game {
   gap: 8px;
 }
 
-.home-hero-connected-actions > * {
+.home-hero-connected-actions>* {
   width: 100%;
 }
 
@@ -4821,21 +4782,17 @@ canvas.game {
 .home-panel {
   border-radius: 22px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  background: linear-gradient(
-    180deg,
-    rgba(10, 18, 35, 0.82) 0%,
-    rgba(14, 25, 47, 0.88) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(10, 18, 35, 0.82) 0%,
+      rgba(14, 25, 47, 0.88) 100%);
   padding: 22px 20px;
   box-shadow: 0 18px 28px rgba(8, 15, 31, 0.24);
 }
 
 .home-panel-status {
-  background: linear-gradient(
-    180deg,
-    rgba(11, 28, 36, 0.84) 0%,
-    rgba(18, 56, 58, 0.88) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(11, 28, 36, 0.84) 0%,
+      rgba(18, 56, 58, 0.88) 100%);
 }
 
 .home-status-grid {
@@ -4914,21 +4871,15 @@ canvas.game {
   padding-top: 56px;
   padding-bottom: 64px;
   background:
-    radial-gradient(
-      circle at top left,
+    radial-gradient(circle at top left,
       rgba(129, 212, 255, 0.12) 0,
-      rgba(129, 212, 255, 0) 26%
-    ),
-    radial-gradient(
-      circle at top right,
+      rgba(129, 212, 255, 0) 26%),
+    radial-gradient(circle at top right,
       rgba(129, 212, 255, 0.1) 0,
-      rgba(129, 212, 255, 0) 18%
-    ),
-    linear-gradient(
-      180deg,
+      rgba(129, 212, 255, 0) 18%),
+    linear-gradient(180deg,
       rgba(18, 31, 61, 0.98) 0%,
-      rgba(19, 34, 68, 0.98) 100%
-    );
+      rgba(19, 34, 68, 0.98) 100%);
   border-top: 1px solid rgba(129, 212, 255, 0.18);
   box-shadow: inset 0 24px 40px rgba(5, 11, 24, 0.28);
 }
@@ -4982,27 +4933,21 @@ canvas.game {
 }
 
 .home-about-media-risk {
-  background: linear-gradient(
-    140deg,
-    rgba(18, 34, 70, 0.95) 0%,
-    rgba(9, 15, 36, 0.96) 100%
-  );
+  background: linear-gradient(140deg,
+      rgba(18, 34, 70, 0.95) 0%,
+      rgba(9, 15, 36, 0.96) 100%);
 }
 
 .home-about-media-checkpoint {
-  background: linear-gradient(
-    140deg,
-    rgba(18, 76, 102, 0.96) 0%,
-    rgba(11, 22, 43, 0.98) 100%
-  );
+  background: linear-gradient(140deg,
+      rgba(18, 76, 102, 0.96) 0%,
+      rgba(11, 22, 43, 0.98) 100%);
 }
 
 .home-about-media-wallet {
-  background: linear-gradient(
-    140deg,
-    rgba(62, 53, 126, 0.96) 0%,
-    rgba(11, 23, 44, 0.98) 100%
-  );
+  background: linear-gradient(140deg,
+      rgba(62, 53, 126, 0.96) 0%,
+      rgba(11, 23, 44, 0.98) 100%);
 }
 
 .home-about-image,
@@ -5020,16 +4965,12 @@ canvas.game {
 .home-about-media-placeholder {
   position: relative;
   background:
-    radial-gradient(
-      circle at top,
+    radial-gradient(circle at top,
       rgba(255, 255, 255, 0.14) 0,
-      rgba(255, 255, 255, 0) 40%
-    ),
-    linear-gradient(
-      180deg,
+      rgba(255, 255, 255, 0) 40%),
+    linear-gradient(180deg,
       rgba(8, 15, 30, 0.08) 0%,
-      rgba(8, 15, 30, 0.42) 100%
-    );
+      rgba(8, 15, 30, 0.42) 100%);
 }
 
 .home-about-media-placeholder::before,
@@ -5046,17 +4987,13 @@ canvas.game {
   height: 36%;
   border-radius: 14px;
   background:
-    linear-gradient(
-      180deg,
+    linear-gradient(180deg,
       rgba(8, 16, 32, 0.08) 0%,
-      rgba(8, 16, 32, 0.3) 100%
-    ),
-    repeating-linear-gradient(
-      90deg,
+      rgba(8, 16, 32, 0.3) 100%),
+    repeating-linear-gradient(90deg,
       rgba(255, 224, 102, 0) 0 22px,
       rgba(255, 224, 102, 0.74) 22px 34px,
-      rgba(255, 224, 102, 0) 34px 56px
-    );
+      rgba(255, 224, 102, 0) 34px 56px);
 }
 
 .home-nav-login {
@@ -5074,30 +5011,22 @@ canvas.game {
 
 .home-about-media-placeholder-checkpoint::before {
   background:
-    radial-gradient(
-      circle at 50% 38%,
+    radial-gradient(circle at 50% 38%,
       rgba(123, 247, 220, 0.32) 0,
-      rgba(123, 247, 220, 0) 26%
-    ),
-    linear-gradient(
-      180deg,
+      rgba(123, 247, 220, 0) 26%),
+    linear-gradient(180deg,
       rgba(19, 58, 74, 0.08) 0%,
-      rgba(19, 58, 74, 0.24) 100%
-    );
+      rgba(19, 58, 74, 0.24) 100%);
 }
 
 .home-about-media-placeholder-wallet::before {
   background:
-    radial-gradient(
-      circle at 50% 38%,
+    radial-gradient(circle at 50% 38%,
       rgba(176, 150, 255, 0.28) 0,
-      rgba(176, 150, 255, 0) 26%
-    ),
-    linear-gradient(
-      180deg,
+      rgba(176, 150, 255, 0) 26%),
+    linear-gradient(180deg,
       rgba(37, 28, 79, 0.08) 0%,
-      rgba(37, 28, 79, 0.24) 100%
-    );
+      rgba(37, 28, 79, 0.24) 100%);
 }
 
 .home-about-feature-title {
@@ -5118,16 +5047,12 @@ canvas.game {
   padding-top: 30px;
   padding-bottom: 36px;
   background:
-    radial-gradient(
-      circle at 10% 15%,
+    radial-gradient(circle at 10% 15%,
       rgba(255, 210, 108, 0.06) 0%,
-      rgba(255, 210, 108, 0) 32%
-    ),
-    linear-gradient(
-      180deg,
+      rgba(255, 210, 108, 0) 32%),
+    linear-gradient(180deg,
       rgba(16, 28, 55, 0.98) 0%,
-      rgba(11, 23, 47, 0.98) 100%
-    );
+      rgba(11, 23, 47, 0.98) 100%);
   border-top: 1px solid rgba(147, 214, 255, 0.16);
 }
 
@@ -5135,16 +5060,12 @@ canvas.game {
   padding-top: 36px;
   padding-bottom: 42px;
   background:
-    radial-gradient(
-      circle at 88% 12%,
+    radial-gradient(circle at 88% 12%,
       rgba(133, 227, 186, 0.08) 0%,
-      rgba(133, 227, 186, 0) 36%
-    ),
-    linear-gradient(
-      180deg,
+      rgba(133, 227, 186, 0) 36%),
+    linear-gradient(180deg,
       rgba(11, 23, 47, 0.98) 0%,
-      rgba(14, 26, 53, 0.98) 100%
-    );
+      rgba(14, 26, 53, 0.98) 100%);
   border-top: 1px solid rgba(147, 214, 255, 0.14);
 }
 
@@ -5152,16 +5073,12 @@ canvas.game {
   padding-top: 30px;
   padding-bottom: 50px;
   background:
-    radial-gradient(
-      circle at 16% 84%,
+    radial-gradient(circle at 16% 84%,
       rgba(164, 145, 255, 0.1) 0%,
-      rgba(164, 145, 255, 0) 40%
-    ),
-    linear-gradient(
-      180deg,
+      rgba(164, 145, 255, 0) 40%),
+    linear-gradient(180deg,
       rgba(14, 26, 53, 0.98) 0%,
-      rgba(10, 20, 42, 0.98) 100%
-    );
+      rgba(10, 20, 42, 0.98) 100%);
   border-top: 1px solid rgba(147, 214, 255, 0.14);
 }
 
@@ -5221,11 +5138,9 @@ canvas.game {
   padding: 20px;
   border-radius: 14px;
   border: 2px solid rgba(137, 202, 255, 0.55);
-  background: linear-gradient(
-    180deg,
-    rgba(14, 25, 49, 0.95) 0%,
-    rgba(19, 33, 63, 0.95) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(14, 25, 49, 0.95) 0%,
+      rgba(19, 33, 63, 0.95) 100%);
   box-shadow:
     4px 4px 0 rgba(6, 13, 26, 0.46),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
@@ -5256,11 +5171,9 @@ canvas.game {
   margin-top: 18px;
   padding: 18px 20px;
   border-radius: 20px;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 234, 161, 0.95) 0%,
-    rgba(255, 208, 92, 0.96) 100%
-  );
+  background: linear-gradient(90deg,
+      rgba(255, 234, 161, 0.95) 0%,
+      rgba(255, 208, 92, 0.96) 100%);
   border: 1px solid rgba(116, 73, 8, 0.16);
   box-shadow: 0 14px 24px rgba(99, 75, 22, 0.12);
   color: #2f2713;
@@ -5355,11 +5268,9 @@ canvas.game {
   margin-top: 18px;
   border-radius: 14px;
   border: 2px solid rgba(137, 202, 255, 0.42);
-  background: linear-gradient(
-    180deg,
-    rgba(12, 21, 42, 0.9) 0%,
-    rgba(8, 17, 36, 0.9) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(12, 21, 42, 0.9) 0%,
+      rgba(8, 17, 36, 0.9) 100%);
   box-shadow:
     4px 4px 0 rgba(6, 13, 26, 0.44),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -5389,11 +5300,9 @@ canvas.game {
 .home-social-card {
   padding: 20px;
   border-radius: 22px;
-  background: linear-gradient(
-    180deg,
-    rgba(12, 20, 39, 0.92) 0%,
-    rgba(20, 33, 61, 0.94) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(12, 20, 39, 0.92) 0%,
+      rgba(20, 33, 61, 0.94) 100%);
   border: 1px solid rgba(255, 255, 255, 0.16);
   box-shadow: 0 18px 28px rgba(8, 17, 32, 0.2);
 }
@@ -5481,11 +5390,9 @@ canvas.game {
   gap: 22px;
   padding: 24px 48px;
   border-radius: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(10, 18, 35, 0.98) 0%,
-    rgba(18, 30, 54, 0.98) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(10, 18, 35, 0.98) 0%,
+      rgba(18, 30, 54, 0.98) 100%);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: none;
   box-sizing: border-box;
@@ -5575,21 +5482,15 @@ canvas.game {
   inset: 0;
   z-index: 1;
   background:
-    radial-gradient(
-      circle at 18% 82%,
+    radial-gradient(circle at 18% 82%,
       rgba(126, 204, 96, 0.22) 0%,
-      rgba(126, 204, 96, 0) 44%
-    ),
-    radial-gradient(
-      circle at 86% 16%,
+      rgba(126, 204, 96, 0) 44%),
+    radial-gradient(circle at 86% 16%,
       rgba(104, 123, 201, 0.22) 0%,
-      rgba(104, 123, 201, 0) 46%
-    ),
-    linear-gradient(
-      180deg,
+      rgba(104, 123, 201, 0) 46%),
+    linear-gradient(180deg,
       rgba(6, 13, 30, 0.24) 0%,
-      rgba(6, 13, 30, 0.68) 100%
-    );
+      rgba(6, 13, 30, 0.68) 100%);
 }
 
 .dashboard-center {
@@ -5654,7 +5555,7 @@ canvas.game {
   justify-content: center;
 }
 
-.dashboard-actions > * {
+.dashboard-actions>* {
   width: 100%;
 }
 
@@ -5697,6 +5598,7 @@ canvas.game {
 }
 
 @media (max-width: 1080px) {
+
   .home-hero-grid,
   .home-feature-grid,
   .home-social-grid,
@@ -5953,17 +5855,13 @@ canvas.game {
     border: 1.5px solid rgba(183, 219, 255, 0.36);
     border-radius: 16px;
     background:
-      linear-gradient(
-        180deg,
+      linear-gradient(180deg,
         rgba(14, 20, 36, 0.14) 0%,
-        rgba(14, 20, 36, 0.02) 100%
-      ),
-      linear-gradient(
-        90deg,
+        rgba(14, 20, 36, 0.02) 100%),
+      linear-gradient(90deg,
         rgba(255, 196, 87, 0.08) 0%,
         rgba(130, 214, 255, 0.12) 50%,
-        rgba(255, 166, 102, 0.08) 100%
-      );
+        rgba(255, 166, 102, 0.08) 100%);
     box-shadow:
       0 8px 18px rgba(0, 0, 0, 0.16),
       inset 0 1px 0 rgba(255, 255, 255, 0.22);
@@ -5974,11 +5872,7 @@ canvas.game {
 
   .play-status-mobile {
     position: fixed;
-    top: calc(
-      var(--play-mobile-edge-gutter) +
-        (var(--play-mobile-header-height) * 2) +
-        (var(--play-mobile-side-gap) * 2)
-    );
+    top: calc(var(--play-mobile-edge-gutter) + (var(--play-mobile-header-height) * 2) + (var(--play-mobile-side-gap) * 2));
     left: var(--play-mobile-edge-gutter);
     z-index: 27;
     width: var(--play-mobile-top-action-width);
@@ -5986,11 +5880,9 @@ canvas.game {
     padding: 4px 8px;
     border: 2px solid rgba(184, 212, 255, 0.45);
     border-radius: 10px;
-    background: linear-gradient(
-      180deg,
-      rgba(18, 27, 49, 0.88) 0%,
-      rgba(28, 37, 63, 0.9) 100%
-    );
+    background: linear-gradient(180deg,
+        rgba(18, 27, 49, 0.88) 0%,
+        rgba(28, 37, 63, 0.9) 100%);
     box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
@@ -6003,38 +5895,30 @@ canvas.game {
 
   .play-status-mobile-ready {
     border-color: rgba(126, 244, 201, 0.55);
-    background: linear-gradient(
-      180deg,
-      rgba(16, 43, 48, 0.9) 0%,
-      rgba(18, 59, 48, 0.92) 100%
-    );
+    background: linear-gradient(180deg,
+        rgba(16, 43, 48, 0.9) 0%,
+        rgba(18, 59, 48, 0.92) 100%);
   }
 
   .play-status-mobile-warning {
     border-color: rgba(255, 206, 101, 0.58);
-    background: linear-gradient(
-      180deg,
-      rgba(72, 48, 14, 0.92) 0%,
-      rgba(98, 61, 18, 0.92) 100%
-    );
+    background: linear-gradient(180deg,
+        rgba(72, 48, 14, 0.92) 0%,
+        rgba(98, 61, 18, 0.92) 100%);
   }
 
   .play-status-mobile-error {
     border-color: rgba(255, 128, 128, 0.62);
-    background: linear-gradient(
-      180deg,
-      rgba(82, 24, 28, 0.94) 0%,
-      rgba(107, 29, 29, 0.94) 100%
-    );
+    background: linear-gradient(180deg,
+        rgba(82, 24, 28, 0.94) 0%,
+        rgba(107, 29, 29, 0.94) 100%);
   }
 
   .play-status-mobile-busy {
     border-color: rgba(154, 221, 255, 0.55);
-    background: linear-gradient(
-      180deg,
-      rgba(21, 34, 62, 0.92) 0%,
-      rgba(26, 48, 84, 0.94) 100%
-    );
+    background: linear-gradient(180deg,
+        rgba(21, 34, 62, 0.92) 0%,
+        rgba(26, 48, 84, 0.94) 100%);
   }
 
   .play-status-mobile:disabled {
@@ -6146,10 +6030,7 @@ canvas.game {
 
   .play-nav-deposit {
     position: fixed;
-    top: calc(
-      var(--play-mobile-edge-gutter) + var(--play-mobile-header-height) +
-        var(--play-mobile-side-gap)
-    );
+    top: calc(var(--play-mobile-edge-gutter) + var(--play-mobile-header-height) + var(--play-mobile-side-gap));
     left: var(--play-mobile-edge-gutter);
     right: auto;
     width: var(--play-mobile-top-action-width);
@@ -6170,12 +6051,8 @@ canvas.game {
     transform: none;
     display: grid;
     grid-template-columns:
-      var(--play-mobile-top-action-width)
-      minmax(0, 1fr)
-      var(--play-mobile-right-action-width);
-    grid-template-rows: var(--play-mobile-header-height) auto var(
-        --play-mobile-header-height
-      );
+      var(--play-mobile-top-action-width) minmax(0, 1fr) var(--play-mobile-right-action-width);
+    grid-template-rows: var(--play-mobile-header-height) auto var(--play-mobile-header-height);
     gap: var(--play-mobile-side-gap);
     align-items: start;
     justify-content: unset;
@@ -6203,7 +6080,7 @@ canvas.game {
     display: contents;
   }
 
-  #top-bar-center > .stat-card:not(.timer-card) {
+  #top-bar-center>.stat-card:not(.timer-card) {
     grid-column: 2;
     grid-row: 1;
     justify-self: center;
@@ -6216,11 +6093,9 @@ canvas.game {
   .play-balance-card {
     position: relative;
     border-color: rgba(214, 232, 255, 0.92);
-    background: linear-gradient(
-      180deg,
-      rgba(20, 31, 58, 0.94) 0%,
-      rgba(32, 48, 82, 0.94) 100%
-    );
+    background: linear-gradient(180deg,
+        rgba(20, 31, 58, 0.94) 0%,
+        rgba(32, 48, 82, 0.94) 100%);
     box-shadow:
       0 0 0 1px rgba(255, 255, 255, 0.08),
       2px 3px 0 rgba(0, 0, 0, 0.3),
@@ -6333,7 +6208,7 @@ canvas.game {
     gap: 8px;
   }
 
-  #top-bar-center > .stat-card:not(.timer-card) {
+  #top-bar-center>.stat-card:not(.timer-card) {
     width: min(112px, 100%);
     min-width: 0;
   }
@@ -6361,19 +6236,43 @@ canvas.game {
     --play-mobile-menu-size: 56px;
     --play-mobile-side-gap: 16px;
   }
-  
-  .play-wallet-trigger { font-size: 10px; }
-  
-  .play-menu-trigger { justify-content: center; align-items: center; gap: 8px; padding: 0; }
-  .play-menu-trigger-label { font-size: 10px; margin-top: 1px; }
-  .hamburger-icon { width: 20px; gap: 3px; }
-  
-  .play-nav-deposit { font-size: 10px; min-height: 40px; }
-  .play-status-mobile-kicker { font-size: 10px; }
-  .play-status-mobile-label { font-size: 10px; }
-  
-  #top-bar-center > .stat-card:not(.timer-card) { 
-    width: 180px; 
+
+  .play-wallet-trigger {
+    font-size: 10px;
+  }
+
+  .play-menu-trigger {
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+  }
+
+  .play-menu-trigger-label {
+    font-size: 10px;
+    margin-top: 1px;
+  }
+
+  .hamburger-icon {
+    width: 20px;
+    gap: 3px;
+  }
+
+  .play-nav-deposit {
+    font-size: 10px;
+    min-height: 40px;
+  }
+
+  .play-status-mobile-kicker {
+    font-size: 10px;
+  }
+
+  .play-status-mobile-label {
+    font-size: 10px;
+  }
+
+  #top-bar-center>.stat-card:not(.timer-card) {
+    width: 180px;
     height: var(--play-mobile-header-height);
     min-height: var(--play-mobile-header-height);
     max-height: var(--play-mobile-header-height);
@@ -6381,29 +6280,59 @@ canvas.game {
     margin: 0;
     box-sizing: border-box;
   }
+
   .play-balance-card {
     box-sizing: border-box;
     padding: 0;
   }
-  .play-balance-card .stat-label { font-size: 9px; }
-  .play-balance-card .stat-value { font-size: 15px; margin-top: 2px; }
-  
-  #timer-card { 
-    width: 100px; 
-    height: var(--play-mobile-header-height); 
+
+  .play-balance-card .stat-label {
+    font-size: 9px;
+  }
+
+  .play-balance-card .stat-value {
+    font-size: 15px;
+    margin-top: 2px;
+  }
+
+  #timer-card {
+    width: 100px;
+    height: var(--play-mobile-header-height);
     padding: 0;
     margin: 0;
     box-sizing: border-box;
   }
-  #timer-card .stat-label { font-size: 9px; }
-  #timer-card .stat-value { font-size: 15px; margin-top: 2px; }
-  
-  #bet-btn { font-size: 14px; min-height: 80px; }
-  
-  .score-metric { transform: scale(1.2); transform-origin: left center; }
-  #score { font-size: 14px !important; }
-  .bet-hud-metric-label { font-size: 8px; }
-  .bet-hud-metric-value { font-size: 16px; }
+
+  #timer-card .stat-label {
+    font-size: 9px;
+  }
+
+  #timer-card .stat-value {
+    font-size: 15px;
+    margin-top: 2px;
+  }
+
+  #bet-btn {
+    font-size: 14px;
+    min-height: 80px;
+  }
+
+  .score-metric {
+    transform: scale(1.2);
+    transform-origin: left center;
+  }
+
+  #score {
+    font-size: 14px !important;
+  }
+
+  .bet-hud-metric-label {
+    font-size: 8px;
+  }
+
+  .bet-hud-metric-value {
+    font-size: 16px;
+  }
 }
 
 /* ============================================================
@@ -6411,14 +6340,14 @@ canvas.game {
 ============================================================ */
 @media (max-width: 480px) and (orientation: portrait) {
   canvas.game {
-    transform: scale(1.1);
+    transform: scale(1.0);
     transform-origin: center center;
   }
-  
+
   #controls {
     bottom: 40px !important;
   }
-  
+
   .fixed-help {
     bottom: 40px !important;
   }
