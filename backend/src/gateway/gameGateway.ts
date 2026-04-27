@@ -1,7 +1,7 @@
 import type { Server as HttpServer } from "node:http";
 import { Server as SocketServer, type Socket } from "socket.io";
 import { v4 as uuidv4 } from "uuid";
-import { createPublicClient, http, type Hex } from "viem";
+import { createPublicClient, http, isAddress, type Hex } from "viem";
 import { getWalletFromSocketCookies } from "../middleware/auth.js";
 import { env } from "../config/env.js";
 import { supabase } from "../config/supabase.js";
@@ -51,6 +51,12 @@ const gatewayPublicClient = createPublicClient({
   transport: http(env.CELO_RPC_URL),
 });
 
+type MiniPaySocketAuthPayload = {
+  walletAddress?: string;
+  walletProvider?: string;
+  chainId?: number | string;
+};
+
 function formatUsdcValue(value: number) {
   const absolute = Math.abs(value);
   if (absolute > 0 && absolute < 0.01) {
@@ -76,6 +82,35 @@ async function signSettlementWithTimeout(params: Parameters<typeof signSettlemen
   ]);
 }
 
+function getWalletFromSocketHandshake(socket: Socket): string | null {
+  const cookieWallet = getWalletFromSocketCookies(socket.handshake.headers.cookie);
+  if (cookieWallet) {
+    return cookieWallet;
+  }
+
+  if (!env.MINIPAY_UNVERIFIED_AUTH_ENABLED) {
+    return null;
+  }
+
+  const auth = (socket.handshake.auth ?? {}) as MiniPaySocketAuthPayload;
+  const walletProvider = String(auth.walletProvider || "").toLowerCase();
+  const claimedAddress = String(auth.walletAddress || "");
+  const claimedChainId = Number(auth.chainId);
+
+  if (walletProvider !== "minipay" || !isAddress(claimedAddress)) {
+    return null;
+  }
+
+  if (
+    Number.isFinite(claimedChainId) &&
+    claimedChainId !== env.CELO_CHAIN_ID
+  ) {
+    return null;
+  }
+
+  return claimedAddress.toLowerCase();
+}
+
 export function setupGameGateway(httpServer: HttpServer): SocketServer {
   io = new SocketServer(httpServer, {
     cors: { origin: env.FRONTEND_URL, credentials: true },
@@ -85,8 +120,7 @@ export function setupGameGateway(httpServer: HttpServer): SocketServer {
   });
 
   io.on("connection", (socket: Socket) => {
-    const cookieHeader = socket.handshake.headers.cookie;
-    const walletAddress = getWalletFromSocketCookies(cookieHeader);
+    const walletAddress = getWalletFromSocketHandshake(socket);
     if (!walletAddress) {
       socket.emit("game:error", { message: "Not authenticated. Connect wallet first." });
       socket.emit("error", { message: "Not authenticated. Connect wallet first." });

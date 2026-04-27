@@ -367,6 +367,7 @@ export function GameBridgeClient({
   const wagmiConfig = useConfig();
   const {
     account,
+    isMiniPay,
     isCeloChain,
     isBackendAuthenticated,
     hasBackendApiConfig: hasBackendConfig,
@@ -501,7 +502,14 @@ export function GameBridgeClient({
     }
 
     function ensureSocket() {
+      const socketAuth = {
+        walletAddress: account || "",
+        walletProvider: isMiniPay ? "minipay" : "wallet",
+        chainId: CELO_CHAIN.chainIdDecimal,
+      };
+
       if (socketRef.current) {
+        socketRef.current.auth = socketAuth;
         return socketRef.current;
       }
 
@@ -510,6 +518,7 @@ export function GameBridgeClient({
       }
 
       const socket = io(BACKEND_API_URL, {
+        auth: socketAuth,
         withCredentials: true,
         transports: ["websocket", "polling"],
       });
