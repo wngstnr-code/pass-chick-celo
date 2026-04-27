@@ -24,6 +24,10 @@ Click the image below to watch the demo:
 
 [![Watch the demo](https://img.youtube.com/vi/wxIVB1u7iPY/maxresdefault.jpg)](https://youtu.be/wxIVB1u7iPY)
 
+## Live App
+
+Try it here: https://pass-chick-celo.vercel.app
+
 ## Status
 
 This project is still in active development.  
