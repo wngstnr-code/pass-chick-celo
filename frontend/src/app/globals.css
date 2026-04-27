@@ -6336,6 +6336,14 @@ canvas.game {
   .bet-hud-metric-value {
     font-size: 16px;
   }
+
+  #controls {
+    bottom: 60px !important;
+  }
+
+  .fixed-help {
+    bottom: 60px !important;
+  }
 }
 
 /* ============================================================
