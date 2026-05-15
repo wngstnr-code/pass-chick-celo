@@ -46,19 +46,6 @@ export function getGameByWallet(walletAddress: string): ActiveGameState | null {
   return activeGames.get(walletAddress) ?? null;
 }
 
-export function getGameBySession(sessionId: string): ActiveGameState | null {
-  const wallet = sessionToWallet.get(sessionId);
-  if (!wallet) return null;
-  return activeGames.get(wallet) ?? null;
-}
-
-export function updateGameState(walletAddress: string, updates: Partial<ActiveGameState>): ActiveGameState | null {
-  const state = activeGames.get(walletAddress);
-  if (!state) return null;
-  Object.assign(state, updates);
-  return state;
-}
-
 export function removeGameState(walletAddress: string): void {
   const state = activeGames.get(walletAddress);
   if (state) {

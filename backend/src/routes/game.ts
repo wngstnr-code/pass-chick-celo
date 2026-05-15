@@ -1,5 +1,9 @@
 import { Router, type Request, type Response } from "express";
-import { createPublicClient, http, isHex, parseAbi, type Address, type Hex } from "viem";
+import {
+  buildStartSessionTransaction,
+  isZeroSessionId,
+  readActiveOnchainSession,
+} from "../lib/celo.js";
 import { requireAuth } from "../middleware/auth.js";
 import { env } from "../config/env.js";
 import { supabase } from "../config/supabase.js";
@@ -7,6 +11,7 @@ import { getGameByWallet, hasActiveGame, removeGameState } from "../services/gam
 import { getEffectiveMultiplierBp } from "../services/gameValidator.js";
 import {
   SETTLEMENT_OUTCOME,
+  generateOnchainSessionId,
   signSettlement,
   usdcToUint256,
 } from "../services/signatureService.js";
@@ -16,13 +21,6 @@ import {
 } from "../services/settlementExecutor.js";
 
 const router = Router();
-const settlementPublicClient = createPublicClient({
-  transport: http(env.CELO_RPC_URL),
-});
-const GAME_SETTLEMENT_READ_ABI = parseAbi([
-  "function activeSessionOf(address player) view returns (bytes32)",
-  "function getSession(bytes32 sessionId) view returns (address player, uint256 stakeAmount, uint64 startedAt, bool active, bool settled)",
-]);
 
 function toSettlementErrorMessage(error: unknown) {
   const raw = String(
@@ -31,16 +29,33 @@ function toSettlementErrorMessage(error: unknown) {
       "unknown error",
   );
   const lower = raw.toLowerCase();
+  const selector = extractErrorSelector(error);
+
+  if (selector === "0xa5a58849") {
+    const payload = extractSelectorPayload(error, selector);
+    if (payload.length >= 128) {
+      try {
+        const availableUnits = BigInt(`0x${payload.slice(0, 64)}`);
+        const requiredUnits = BigInt(`0x${payload.slice(64, 128)}`);
+        const available = Number(availableUnits) / 1_000_000;
+        const required = Number(requiredUnits) / 1_000_000;
+        return `Failed to submit settlement onchain: treasury balance is insufficient (available ${available.toFixed(6)} USDC, required ${required.toFixed(6)} USDC).`;
+      } catch {
+        return "Failed to submit settlement onchain: treasury balance is insufficient for payout.";
+      }
+    }
+    return "Failed to submit settlement onchain: treasury balance is insufficient for payout.";
+  }
 
   if (
     lower.includes("insufficient funds") ||
     lower.includes("funds for gas") ||
     lower.includes("signer had insufficient balance")
   ) {
-    return `Failed to submit settlement onchain: backend relayer kehabisan CELO untuk gas (relayer: ${getSettlementRelayerAddress()}).`;
+    return `Failed to submit settlement onchain: backend relayer kehabisan ${env.NATIVE_TOKEN_SYMBOL} untuk gas (relayer: ${getSettlementRelayerAddress()}).`;
   }
   if (lower.includes("enotfound") || lower.includes("fetch failed")) {
-    return "Failed to submit settlement onchain: backend gagal mengakses RPC Celo.";
+    return `Failed to submit settlement onchain: backend gagal mengakses RPC ${env.NETWORK_NAME}.`;
   }
   if (lower.includes("invalidsigner")) {
     return "Failed to submit settlement onchain: signer backend tidak cocok dengan signer di contract.";
@@ -76,18 +91,95 @@ function toSettlementErrorMessage(error: unknown) {
   return `Failed to submit settlement onchain: ${raw}`;
 }
 
-function isAlreadySettledLikeError(error: unknown) {
-  const raw = String(
-    (error as { shortMessage?: string; message?: string })?.shortMessage ||
-      (error as { message?: string })?.message ||
-      "",
-  ).toLowerCase();
+function extractErrorSelector(error: unknown) {
+  const texts = collectErrorTexts(error);
+  for (const text of texts) {
+    const match = text.match(/0x[a-fA-F0-9]{8}\b/);
+    if (match?.[0]) {
+      return match[0].toLowerCase();
+    }
+  }
+  return "";
+}
 
-  return (
-    raw.includes("sessionalreadysettled") ||
-    raw.includes("sessionnotactive") ||
-    raw.includes("sessionnotfound")
-  );
+function extractSelectorPayload(error: unknown, selector: string) {
+  const normalizedSelector = selector.toLowerCase();
+  const texts = collectErrorTexts(error);
+  for (const text of texts) {
+    const lower = text.toLowerCase();
+    const idx = lower.indexOf(normalizedSelector);
+    if (idx < 0) continue;
+    const payload = lower
+      .slice(idx + normalizedSelector.length)
+      .replace(/[^a-f0-9]/g, "");
+    if (payload.length >= 64) {
+      return payload;
+    }
+  }
+  return "";
+}
+
+const ALREADY_SETTLED_LIKE_SELECTORS = new Set([
+  "0xfa9b370d",
+  "0x2f2c01cb",
+  "0x15e292d2",
+]);
+
+function collectErrorTexts(error: unknown): string[] {
+  const out: string[] = [];
+  const seen = new Set<object>();
+  const queue: unknown[] = [error];
+
+  while (queue.length > 0) {
+    const cur = queue.shift();
+    if (cur == null) continue;
+    if (typeof cur === "string") {
+      out.push(cur);
+      continue;
+    }
+    if (typeof cur !== "object") continue;
+    if (seen.has(cur as object)) continue;
+    seen.add(cur as object);
+
+    const rec = cur as Record<string, unknown>;
+    for (const value of Object.values(rec)) {
+      if (typeof value === "string") {
+        out.push(value);
+      } else if (Array.isArray(value)) {
+        for (const item of value) queue.push(item);
+      } else if (value && typeof value === "object") {
+        queue.push(value);
+      }
+    }
+  }
+
+  return out;
+}
+
+function isAlreadySettledLikeError(error: unknown) {
+  const texts = collectErrorTexts(error);
+
+  for (const text of texts) {
+    const lower = text.toLowerCase();
+    if (
+      lower.includes("sessionalreadysettled") ||
+      lower.includes("sessionnotactive") ||
+      lower.includes("sessionnotfound")
+    ) {
+      return true;
+    }
+
+    const selectorMatch = text.match(/0x[a-fA-F0-9]{8}/g);
+    if (selectorMatch) {
+      for (const candidate of selectorMatch) {
+        if (ALREADY_SETTLED_LIKE_SELECTORS.has(candidate.toLowerCase())) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
 }
 
 function parsePaginationParam(value: unknown, fallback: number, min: number, max: number) {
@@ -247,13 +339,30 @@ async function crashAndPersistSession(params: {
     outcome: SETTLEMENT_OUTCOME.CRASHED,
   });
 
+  let settlementTxHash: string | null = null;
+  try {
+    settlementTxHash = await submitSettlementOnchain({
+      resolution: settlement.resolution,
+      signature: settlement.signature,
+    });
+  } catch (submitError) {
+    if (isAlreadySettledLikeError(submitError)) {
+      settlementTxHash = "already-settled-onchain";
+    } else {
+      console.error(
+        `❌ Failed to submit crash settlement for ${params.onchainSessionId}:`,
+        submitError,
+      );
+    }
+  }
+
   const updates: Record<string, unknown> = {
     status: "CRASHED",
     final_multiplier: params.finalMultiplier ?? 0,
     payout_amount: 0,
     settlement_signature: settlement.signature,
     settlement_deadline: settlement.resolution.deadline,
-    settlement_tx_hash: null,
+    settlement_tx_hash: settlementTxHash,
     ended_at: new Date().toISOString(),
   };
 
@@ -348,34 +457,13 @@ async function persistRecoveredOnchainCrash(params: {
 }
 
 async function recoverOnchainActiveSession(walletAddress: string) {
-  const onchainSessionId = await settlementPublicClient.readContract({
-    address: env.GAME_SETTLEMENT_ADDRESS as Address,
-    abi: GAME_SETTLEMENT_READ_ABI,
-    functionName: "activeSessionOf",
-    args: [walletAddress as Address],
-  });
+  const active = await readActiveOnchainSession(walletAddress);
+  if (!active) return null;
 
-  if (!isHex(onchainSessionId, { strict: true }) || /^0x0{64}$/i.test(onchainSessionId)) {
-    return null;
-  }
+  const onchainSessionId = active.sessionId;
+  if (isZeroSessionId(onchainSessionId)) return null;
 
-  const session = await settlementPublicClient.readContract({
-    address: env.GAME_SETTLEMENT_ADDRESS as Address,
-    abi: GAME_SETTLEMENT_READ_ABI,
-    functionName: "getSession",
-    args: [onchainSessionId],
-  });
-
-  const player = String(session[0] || "").toLowerCase();
-  const stakeAmountUnits = session[1];
-  const active = Boolean(session[3]);
-  const settled = Boolean(session[4]);
-
-  if (player !== walletAddress.toLowerCase() || !active || settled) {
-    return null;
-  }
-
-  const stakeAmount = Number(stakeAmountUnits) / 1_000_000;
+  const stakeAmount = Number(active.stakeAmountUnits) / 1_000_000;
   const settlement = await signSettlement({
     playerAddress: walletAddress,
     onchainSessionId,
@@ -481,27 +569,17 @@ async function ensureSettlementSignature(
 
 async function isCurrentOnchainPendingSettlement(session: Record<string, unknown>) {
   const onchainSessionId = String(session.onchain_session_id ?? "");
-  if (!isHex(onchainSessionId, { strict: true })) {
+  if (!/^0x[0-9a-fA-F]{64}$/.test(onchainSessionId) || isZeroSessionId(onchainSessionId)) {
     return false;
   }
 
+  const walletAddress = String(session.wallet_address ?? "");
+  if (!walletAddress) return false;
+
   try {
-    const onchainSession = await settlementPublicClient.readContract({
-      address: env.GAME_SETTLEMENT_ADDRESS as Address,
-      abi: GAME_SETTLEMENT_READ_ABI,
-      functionName: "getSession",
-      args: [onchainSessionId as Hex],
-    });
-
-    const player = onchainSession[0];
-    const active = onchainSession[3];
-    const settled = onchainSession[4];
-
-    if (!player || /^0x0{40}$/i.test(player)) {
-      return false;
-    }
-
-    return Boolean(active && !settled);
+    const active = await readActiveOnchainSession(walletAddress);
+    if (!active) return false;
+    return active.sessionId.toLowerCase() === onchainSessionId.toLowerCase();
   } catch (inspectError) {
     console.error(`❌ Failed to inspect pending settlement ${onchainSessionId}:`, inspectError);
     return true;
@@ -726,6 +804,45 @@ async function getPendingSettlements(req: Request, res: Response) {
 router.get("/pending-settlement", requireAuth, getPendingSettlements);
 router.get("/pending-claim", requireAuth, getPendingSettlements);
 router.post("/force-end-active", requireAuth, forceEndActiveSession);
+router.post("/start-session", requireAuth, async (req: Request, res: Response) => {
+  try {
+    const walletAddress = req.walletAddress!;
+    const stakeAmount = Number((req.body as { stake?: number | string }).stake ?? 0);
+
+    if (!Number.isFinite(stakeAmount) || stakeAmount <= 0) {
+      res.status(400).json({ error: "Invalid stake amount." });
+      return;
+    }
+
+    const activeOnchain = await readActiveOnchainSession(walletAddress);
+    if (activeOnchain) {
+      res.json({
+        success: true,
+        onchainSessionId: activeOnchain.sessionId,
+        unsignedTx: null,
+        reusedActiveSession: true,
+      });
+      return;
+    }
+
+    const onchainSessionId = generateOnchainSessionId();
+    const unsignedTx = await buildStartSessionTransaction(
+      walletAddress,
+      onchainSessionId,
+      usdcToUint256(stakeAmount),
+    );
+
+    res.json({
+      success: true,
+      onchainSessionId,
+      unsignedTx,
+      reusedActiveSession: false,
+    });
+  } catch (error) {
+    console.error("❌ Failed to build start-session transaction:", error);
+    res.status(500).json({ error: "Failed to build start-session transaction." });
+  }
+});
 
 router.get("/history", requireAuth, async (req: Request, res: Response) => {
   const walletAddress = req.walletAddress!;
@@ -764,7 +881,7 @@ async function clearSettlement(req: Request, res: Response) {
   }
 
   const normalizedTxHash = String(txHash).trim();
-  if (!isHex(normalizedTxHash, { strict: true }) || normalizedTxHash.length !== 66) {
+  if (!normalizedTxHash || normalizedTxHash.length < 32) {
     res.status(400).json({ error: "Invalid txHash format." });
     return;
   }
@@ -844,7 +961,6 @@ async function submitSettlement(req: Request, res: Response) {
     console.error(`❌ Failed to submit settlement ${sessionId}:`, submitError);
 
     if (isAlreadySettledLikeError(submitError)) {
-      // If chain state already closed, don't keep blocking new runs.
       await supabase
         .from("game_sessions")
         .update({ settlement_tx_hash: "already-settled-onchain" })
