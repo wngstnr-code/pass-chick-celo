@@ -159,6 +159,41 @@ router.post("/social", async (req, res) => {
   }
 });
 
+router.post("/minipay", async (req, res) => {
+  try {
+    const {
+      address,
+      chainId,
+    }: {
+      address?: string;
+      chainId?: number;
+    } = req.body ?? {};
+
+    if (!address || !isValidEvmAddress(address)) {
+      res.status(400).json({ error: "Missing or invalid wallet address." });
+      return;
+    }
+
+    if (chainId && Number(chainId) !== env.CHAIN_ID) {
+      res.status(400).json({ error: `Unsupported chainId. Expected ${env.CHAIN_ID}.` });
+      return;
+    }
+
+    const walletAddress = normalizeEvmAddress(address);
+    await ensurePlayerRecord(walletAddress);
+    createAuthenticatedSession(res, walletAddress);
+
+    res.json({
+      success: true,
+      address: walletAddress,
+      authMethod: "minipay",
+    });
+  } catch (err) {
+    console.error("❌ MiniPay auth error:", err);
+    res.status(500).json({ error: "MiniPay authentication failed." });
+  }
+});
+
 router.post("/logout", (req, res) => {
   const token = req.cookies?.[SESSION_COOKIE];
   if (token) {
