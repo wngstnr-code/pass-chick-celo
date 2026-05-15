@@ -1,18 +1,14 @@
-import { createPublicClient, http, parseAbiItem, type Address } from "viem";
 import { env } from "../config/env.js";
 import { supabase } from "../config/supabase.js";
-
-const DEPOSITED_EVENT = parseAbiItem("event Deposited(address indexed account, uint256 amount)");
-const WITHDRAWN_EVENT = parseAbiItem("event Withdrawn(address indexed account, uint256 amount)");
-const TREASURY_FUNDED_EVENT = parseAbiItem(
-  "event TreasuryFunded(address indexed funder, uint256 amount)"
-);
-const SESSION_STARTED_EVENT = parseAbiItem(
-  "event SessionStarted(address indexed player, bytes32 indexed sessionId, uint256 stakeAmount)"
-);
-const SESSION_SETTLED_EVENT = parseAbiItem(
-  "event SessionSettled(address indexed player, bytes32 indexed sessionId, uint8 outcome, uint256 stakeAmount, uint256 payoutAmount, uint256 finalMultiplierBp)"
-);
+import {
+  FAUCET_ABI,
+  FAUCET_CONTRACT_ADDRESS,
+  GAME_SETTLEMENT_ABI,
+  GAME_SETTLEMENT_ADDRESS,
+  GAME_VAULT_ABI,
+  GAME_VAULT_ADDRESS,
+  publicClient,
+} from "../lib/celo.js";
 
 type TransactionType =
   | "DEPOSIT"
@@ -21,25 +17,17 @@ type TransactionType =
   | "SESSION_STARTED"
   | "SESSION_SETTLED";
 
-const EVENT_POLL_INTERVAL_MS = 15_000;
-
-let publicClient: ReturnType<typeof createPublicClient> | null = null;
 let isListening = false;
-let lastProcessedBlock: bigint | null = null;
+let unwatchers: Array<() => void> = [];
 
-function getPublicClient() {
-  if (!publicClient) {
-    publicClient = createPublicClient({ transport: http(env.CELO_RPC_URL) });
-  }
-
-  return publicClient;
+function unitsToToken(amount: bigint): number {
+  return Number(amount) / 10 ** env.TOKEN_DECIMALS;
 }
 
 async function ensurePlayer(walletAddress: string) {
   const { error } = await supabase
     .from("players")
-    .upsert({ wallet_address: walletAddress.toLowerCase() }, { onConflict: "wallet_address" });
-
+    .upsert({ wallet_address: walletAddress }, { onConflict: "wallet_address" });
   if (error) {
     console.error(`❌ Failed to ensure player ${walletAddress}:`, error);
   }
@@ -55,213 +43,199 @@ async function logTransaction(params: {
   const { error } = await supabase.from("transactions").upsert(
     {
       tx_hash: params.txHash,
-      wallet_address: params.walletAddress.toLowerCase(),
+      wallet_address: params.walletAddress,
       type: params.type,
       amount: params.amount,
       onchain_session_id: params.onchainSessionId ?? null,
     },
-    { onConflict: "tx_hash" }
+    { onConflict: "tx_hash" },
   );
-
   if (error) {
     console.error(`❌ Failed to log transaction ${params.txHash}:`, error);
   }
 }
 
-async function syncVaultEventRange(vaultAddress: Address, fromBlock: bigint, toBlock: bigint) {
-  const client = getPublicClient();
-
-  const [deposits, withdrawals, treasuryFunded] = await Promise.all([
-    client.getLogs({
-      address: vaultAddress,
-      event: DEPOSITED_EVENT,
-      fromBlock,
-      toBlock,
-    }),
-    client.getLogs({
-      address: vaultAddress,
-      event: WITHDRAWN_EVENT,
-      fromBlock,
-      toBlock,
-    }),
-    client.getLogs({
-      address: vaultAddress,
-      event: TREASURY_FUNDED_EVENT,
-      fromBlock,
-      toBlock,
-    }),
-  ]);
-
-  for (const log of deposits) {
-    const { account, amount } = log.args;
-    if (!account || amount === undefined) continue;
-    await ensurePlayer(account);
-    if (log.transactionHash) {
-      await logTransaction({
-        txHash: log.transactionHash,
-        walletAddress: account,
-        type: "DEPOSIT",
-        amount: Number(amount) / 1e6,
-      });
-    }
-  }
-
-  for (const log of withdrawals) {
-    const { account, amount } = log.args;
-    if (!account || amount === undefined) continue;
-    await ensurePlayer(account);
-    if (log.transactionHash) {
-      await logTransaction({
-        txHash: log.transactionHash,
-        walletAddress: account,
-        type: "WITHDRAW",
-        amount: Number(amount) / 1e6,
-      });
-    }
-  }
-
-  for (const log of treasuryFunded) {
-    const { funder, amount } = log.args;
-    if (!funder || amount === undefined) continue;
-    await ensurePlayer(funder);
-    if (log.transactionHash) {
-      await logTransaction({
-        txHash: log.transactionHash,
-        walletAddress: funder,
-        type: "TREASURY_FUNDED",
-        amount: Number(amount) / 1e6,
-      });
-    }
-  }
-}
-
-async function syncSettlementEventRange(settlementAddress: Address, fromBlock: bigint, toBlock: bigint) {
-  const client = getPublicClient();
-
-  const [sessionStarted, sessionSettled] = await Promise.all([
-    client.getLogs({
-      address: settlementAddress,
-      event: SESSION_STARTED_EVENT,
-      fromBlock,
-      toBlock,
-    }),
-    client.getLogs({
-      address: settlementAddress,
-      event: SESSION_SETTLED_EVENT,
-      fromBlock,
-      toBlock,
-    }),
-  ]);
-
-  for (const log of sessionStarted) {
-    const { player, sessionId, stakeAmount } = log.args;
-    if (!player || !sessionId || stakeAmount === undefined) continue;
-
-    await ensurePlayer(player);
-
-    if (log.transactionHash) {
-      await logTransaction({
-        txHash: log.transactionHash,
-        walletAddress: player,
-        type: "SESSION_STARTED",
-        amount: Number(stakeAmount) / 1e6,
-        onchainSessionId: sessionId.toLowerCase(),
-      });
-    }
-  }
-
-  for (const log of sessionSettled) {
-    const { player, sessionId, outcome, payoutAmount, finalMultiplierBp } = log.args;
-    if (!player || !sessionId || outcome === undefined || payoutAmount === undefined || finalMultiplierBp === undefined) {
-      continue;
-    }
-
-    await ensurePlayer(player);
-
-    await supabase
-      .from("game_sessions")
-      .update({
-        settlement_tx_hash: log.transactionHash ?? null,
-        final_multiplier: Number(finalMultiplierBp) / 10_000,
-        payout_amount: Number(payoutAmount) / 1e6,
-        status: outcome === 1 ? "CASHED_OUT" : "CRASHED",
-      })
-      .eq("wallet_address", player.toLowerCase())
-      .eq("onchain_session_id", sessionId.toLowerCase());
-
-    if (log.transactionHash) {
-      await logTransaction({
-        txHash: log.transactionHash,
-        walletAddress: player,
-        type: "SESSION_SETTLED",
-        amount: Number(payoutAmount) / 1e6,
-        onchainSessionId: sessionId.toLowerCase(),
-      });
-    }
-  }
-}
-
-async function syncBlockRange(vaultAddress: Address, settlementAddress: Address, fromBlock: bigint, toBlock: bigint) {
-  if (fromBlock > toBlock) {
-    return;
-  }
-
-  await Promise.all([
-    syncVaultEventRange(vaultAddress, fromBlock, toBlock),
-    syncSettlementEventRange(settlementAddress, fromBlock, toBlock),
-  ]);
+function txHash(log: { transactionHash?: string | null }) {
+  return String(log.transactionHash || "");
 }
 
 export async function startBlockchainListener(): Promise<void> {
-  if (isListening) {
-    return;
-  }
-
-  const vaultAddress = env.GAME_VAULT_ADDRESS as Address;
-  const settlementAddress = env.GAME_SETTLEMENT_ADDRESS as Address;
-
-  if (
-    vaultAddress === "0x0000000000000000000000000000000000000000" ||
-    settlementAddress === "0x0000000000000000000000000000000000000000"
-  ) {
-    console.log("⚠️  Blockchain listener SKIPPED — GAME_VAULT_ADDRESS or GAME_SETTLEMENT_ADDRESS is placeholder");
-    return;
-  }
-
-  const client = getPublicClient();
+  if (isListening) return;
 
   try {
-    console.log(`🔗 Starting blockchain listener on ${env.CELO_RPC_URL}`);
-    console.log(`   Watching vault: ${vaultAddress}`);
-    console.log(`   Watching settlement: ${settlementAddress}`);
+    console.log(`🔗 Starting Celo event listener on ${env.RPC_URL}`);
+    console.log(`   Vault: ${GAME_VAULT_ADDRESS}`);
+    console.log(`   Settlement: ${GAME_SETTLEMENT_ADDRESS}`);
 
-    const currentBlock = await client.getBlockNumber();
-    lastProcessedBlock = currentBlock;
+    unwatchers = [
+      publicClient.watchContractEvent({
+        address: GAME_VAULT_ADDRESS,
+        abi: GAME_VAULT_ABI,
+        eventName: "Deposited",
+        onLogs: (logs) => {
+          for (const log of logs) {
+            void (async () => {
+              const walletAddress = log.args.account;
+              if (!walletAddress || log.args.amount === undefined) return;
+              await ensurePlayer(walletAddress);
+              await logTransaction({
+                txHash: txHash(log),
+                walletAddress,
+                type: "DEPOSIT",
+                amount: unitsToToken(log.args.amount),
+              });
+            })().catch((err) => console.error("❌ Failed to handle Deposited event:", err));
+          }
+        },
+      }),
+      publicClient.watchContractEvent({
+        address: GAME_VAULT_ADDRESS,
+        abi: GAME_VAULT_ABI,
+        eventName: "Withdrawn",
+        onLogs: (logs) => {
+          for (const log of logs) {
+            void (async () => {
+              const walletAddress = log.args.account;
+              if (!walletAddress || log.args.amount === undefined) return;
+              await ensurePlayer(walletAddress);
+              await logTransaction({
+                txHash: txHash(log),
+                walletAddress,
+                type: "WITHDRAW",
+                amount: unitsToToken(log.args.amount),
+              });
+            })().catch((err) => console.error("❌ Failed to handle Withdrawn event:", err));
+          }
+        },
+      }),
+      publicClient.watchContractEvent({
+        address: GAME_VAULT_ADDRESS,
+        abi: GAME_VAULT_ABI,
+        eventName: "TreasuryFunded",
+        onLogs: (logs) => {
+          for (const log of logs) {
+            void (async () => {
+              const walletAddress = log.args.funder;
+              if (!walletAddress || log.args.amount === undefined) return;
+              await ensurePlayer(walletAddress);
+              await logTransaction({
+                txHash: txHash(log),
+                walletAddress,
+                type: "TREASURY_FUNDED",
+                amount: unitsToToken(log.args.amount),
+              });
+            })().catch((err) => console.error("❌ Failed to handle TreasuryFunded event:", err));
+          }
+        },
+      }),
+      publicClient.watchContractEvent({
+        address: GAME_SETTLEMENT_ADDRESS,
+        abi: GAME_SETTLEMENT_ABI,
+        eventName: "SessionStarted",
+        onLogs: (logs) => {
+          for (const log of logs) {
+            void (async () => {
+              const walletAddress = log.args.player;
+              const sessionId = log.args.sessionId;
+              if (!walletAddress || !sessionId || log.args.stakeAmount === undefined) return;
+              await ensurePlayer(walletAddress);
+              await logTransaction({
+                txHash: txHash(log),
+                walletAddress,
+                type: "SESSION_STARTED",
+                amount: unitsToToken(log.args.stakeAmount),
+                onchainSessionId: sessionId,
+              });
+            })().catch((err) => console.error("❌ Failed to handle SessionStarted event:", err));
+          }
+        },
+      }),
+      publicClient.watchContractEvent({
+        address: GAME_SETTLEMENT_ADDRESS,
+        abi: GAME_SETTLEMENT_ABI,
+        eventName: "SessionSettled",
+        onLogs: (logs) => {
+          for (const log of logs) {
+            void (async () => {
+              const walletAddress = log.args.player;
+              const sessionId = log.args.sessionId;
+              const outcome = log.args.outcome;
+              if (
+                !walletAddress ||
+                !sessionId ||
+                outcome === undefined ||
+                log.args.payoutAmount === undefined ||
+                log.args.finalMultiplierBp === undefined
+              ) {
+                return;
+              }
+              await ensurePlayer(walletAddress);
 
-    client.watchBlockNumber({
-      poll: true,
-      pollingInterval: EVENT_POLL_INTERVAL_MS,
-      emitOnBegin: false,
-      emitMissed: true,
-      onBlockNumber: async (blockNumber) => {
-        const fromBlock = lastProcessedBlock === null ? blockNumber : lastProcessedBlock + 1n;
-        lastProcessedBlock = blockNumber;
+              await supabase
+                .from("game_sessions")
+                .update({
+                  settlement_tx_hash: txHash(log),
+                  final_multiplier: Number(log.args.finalMultiplierBp) / 10_000,
+                  payout_amount: unitsToToken(log.args.payoutAmount),
+                  status: outcome === 1 ? "CASHED_OUT" : "CRASHED",
+                })
+                .eq("wallet_address", walletAddress)
+                .eq("onchain_session_id", sessionId);
 
-        try {
-          await syncBlockRange(vaultAddress, settlementAddress, fromBlock, blockNumber);
-        } catch (error) {
-          console.error("❌ Blockchain sync error:", error);
-        }
-      },
-      onError: (error) => {
-        console.error("❌ Block watcher error:", error);
-      },
-    });
+              await logTransaction({
+                txHash: txHash(log),
+                walletAddress,
+                type: "SESSION_SETTLED",
+                amount: unitsToToken(log.args.payoutAmount),
+                onchainSessionId: sessionId,
+              });
+            })().catch((err) => console.error("❌ Failed to handle SessionSettled event:", err));
+          }
+        },
+      }),
+    ];
+
+    if (FAUCET_CONTRACT_ADDRESS !== "0x0000000000000000000000000000000000000000") {
+      unwatchers.push(
+        publicClient.watchContractEvent({
+          address: FAUCET_CONTRACT_ADDRESS,
+          abi: FAUCET_ABI,
+          eventName: "Claimed",
+          onLogs: (logs) => {
+            for (const log of logs) {
+              void (async () => {
+                const walletAddress = log.args.account;
+                if (!walletAddress || log.args.amount === undefined) return;
+                await ensurePlayer(walletAddress);
+                await logTransaction({
+                  txHash: txHash(log),
+                  walletAddress,
+                  type: "DEPOSIT",
+                  amount: unitsToToken(log.args.amount),
+                });
+              })().catch((err) => console.error("❌ Failed to handle Faucet Claimed event:", err));
+            }
+          },
+        }),
+      );
+    }
 
     isListening = true;
-    console.log("✅ Blockchain event listeners active");
+    console.log("✅ Celo event listener active");
   } catch (err) {
-    console.error("❌ Failed to start blockchain listener:", err);
+    console.error("❌ Failed to start Celo event listener:", err);
     console.log("   Backend will continue without blockchain events.");
   }
+}
+
+export async function stopBlockchainListener(): Promise<void> {
+  for (const unwatch of unwatchers) {
+    try {
+      unwatch();
+    } catch (err) {
+      console.error("⚠️  Error removing event listener:", err);
+    }
+  }
+  unwatchers = [];
+  isListening = false;
 }
