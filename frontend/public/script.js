@@ -1934,7 +1934,7 @@ function DirectionalLight() {
   return dirLight;
 }
 
-function createFrontierCheckpointGroundTexture() {
+function createProofOfShipCheckpointGroundTexture() {
   const canvas = document.createElement("canvas");
   canvas.width = 4096;
   canvas.height = 80;
@@ -2292,15 +2292,15 @@ function Grass(rowIndex, isCheckpoint) {
   grass.add(right);
 
   if (isCheckpoint) {
-    const frontierGround = new THREE.Mesh(
+    const proofOfShipGround = new THREE.Mesh(
       new THREE.PlaneGeometry(tilesPerRow * tileSize * 3, tileSize),
       new THREE.MeshBasicMaterial({
-        map: createFrontierCheckpointGroundTexture(),
+        map: createProofOfShipCheckpointGroundTexture(),
         depthWrite: false,
       }),
     );
-    frontierGround.position.set(0, 0, 1.72);
-    grass.add(frontierGround);
+    proofOfShipGround.position.set(0, 0, 1.72);
+    grass.add(proofOfShipGround);
 
     const postMat = new THREE.MeshLambertMaterial({
       color: 0x253041,
