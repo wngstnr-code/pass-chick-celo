@@ -1942,70 +1942,82 @@ function createProofOfShipCheckpointGroundTexture() {
 
   if (!ctx) return new THREE.CanvasTexture(canvas);
 
-  const sky = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  sky.addColorStop(0, "#064f76");
-  sky.addColorStop(0.38, "#0b5878");
-  sky.addColorStop(0.58, "#6f7e82");
-  sky.addColorStop(0.78, "#c17848");
-  sky.addColorStop(1, "#d94b20");
-  ctx.fillStyle = sky;
+  ctx.fillStyle = "#17001f";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  const warmth = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  warmth.addColorStop(0, "rgba(3, 20, 38, 0.18)");
-  warmth.addColorStop(0.52, "rgba(224, 208, 174, 0.18)");
-  warmth.addColorStop(0.78, "rgba(255, 183, 82, 0.32)");
-  warmth.addColorStop(1, "rgba(208, 64, 25, 0.28)");
-  ctx.fillStyle = warmth;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  const sun = ctx.createRadialGradient(
+  const glow = ctx.createRadialGradient(
     canvas.width * 0.5,
-    canvas.height * 1.08,
-    canvas.height * 0.08,
+    canvas.height * 0.52,
+    canvas.height * 0.1,
     canvas.width * 0.5,
-    canvas.height * 1.08,
-    canvas.height * 2.3,
+    canvas.height * 0.52,
+    canvas.width * 0.42,
   );
-  sun.addColorStop(0, "rgba(255, 231, 145, 0.58)");
-  sun.addColorStop(0.42, "rgba(255, 176, 69, 0.26)");
-  sun.addColorStop(1, "rgba(255, 176, 69, 0)");
-  ctx.fillStyle = sun;
+  glow.addColorStop(0, "rgba(184, 137, 255, 0.22)");
+  glow.addColorStop(0.52, "rgba(72, 190, 255, 0.1)");
+  glow.addColorStop(1, "rgba(72, 190, 255, 0)");
+  ctx.fillStyle = glow;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  ctx.globalAlpha = 0.12;
-  ctx.fillStyle = "#d8efff";
-  ctx.font = "7px ui-monospace, SFMono-Regular, Consolas, monospace";
-  const codeLines = [
-    "checkpoint.emit('settlement-ready')",
-    "run.sync(frontier.proof)",
-    "cashout.window.open",
-  ];
-  for (let x = 24; x < canvas.width; x += 230) {
-    for (let y = 14; y < canvas.height - 8; y += 18) {
-      const line = codeLines[(x + y) % codeLines.length];
-      ctx.fillText(line, x, y);
+  ctx.strokeStyle = "rgba(244, 225, 255, 0.12)";
+  ctx.lineWidth = 1;
+  for (let x = 0; x <= canvas.width; x += 80) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, canvas.height);
+    ctx.stroke();
+  }
+  for (let y = 0; y <= canvas.height; y += 20) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(canvas.width, y);
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
+  for (let x = 18; x < canvas.width; x += 32) {
+    for (let y = 10; y < canvas.height; y += 14) {
+      ctx.fillRect(x, y, 2, 2);
     }
   }
-  ctx.globalAlpha = 1;
 
-  ctx.save();
-  ctx.translate(0, canvas.height);
-  ctx.fillStyle = "rgba(10, 19, 27, 0.64)";
-  ctx.beginPath();
-  ctx.moveTo(0, 0);
-  ctx.lineTo(canvas.width * 0.1, -canvas.height * 0.3);
-  ctx.lineTo(canvas.width * 0.2, -canvas.height * 0.14);
-  ctx.lineTo(canvas.width * 0.32, -canvas.height * 0.42);
-  ctx.lineTo(canvas.width * 0.47, -canvas.height * 0.18);
-  ctx.lineTo(canvas.width * 0.62, -canvas.height * 0.38);
-  ctx.lineTo(canvas.width * 0.76, -canvas.height * 0.18);
-  ctx.lineTo(canvas.width * 0.9, -canvas.height * 0.43);
-  ctx.lineTo(canvas.width, -canvas.height * 0.22);
-  ctx.lineTo(canvas.width, 0);
-  ctx.closePath();
-  ctx.fill();
-  ctx.restore();
+  const pipeMat = [
+    "rgba(255, 255, 255, 0.18)",
+    "rgba(179, 155, 204, 0.22)",
+    "rgba(255, 141, 221, 0.22)",
+    "rgba(107, 196, 255, 0.22)",
+  ];
+  for (let x = 0; x < canvas.width; x += 760) {
+    ctx.fillStyle = pipeMat[(x / 760) % pipeMat.length];
+    ctx.fillRect(x + 42, 0, 18, 58);
+    ctx.fillRect(x + 42, 42, 210, 16);
+    ctx.fillRect(x + 234, 42, 18, 38);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+    ctx.strokeRect(x + 42, 0, 210, 58);
+  }
+
+  const chipX = canvas.width * 0.22;
+  const chipY = 8;
+  const chipW = 92;
+  const chips = [
+    { label: "BUILD", color: "#b794ff" },
+    { label: "SHIP", color: "#62c9ff" },
+    { label: "GROW", color: "#ff8de5" },
+  ];
+  ctx.font = "900 15px Arial Black, Arial, sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  chips.forEach((chip, index) => {
+    ctx.fillStyle = chip.color;
+    ctx.fillRect(chipX + index * chipW, chipY, chipW, 18);
+    ctx.fillStyle = "#180021";
+    ctx.fillText(chip.label, chipX + index * chipW + chipW / 2, chipY + 10);
+  });
+
+  ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+  ctx.font = "900 18px Arial Black, Arial, sans-serif";
+  ctx.textAlign = "right";
+  ctx.fillText("CELO", canvas.width - 260, 18);
 
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
