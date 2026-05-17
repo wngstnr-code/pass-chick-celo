@@ -2021,29 +2021,15 @@ function createProofOfShipCheckpointGroundTexture() {
 
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.font = "900 52px Arial Black, Arial, sans-serif";
+  ctx.font = "900 39px Arial Black, Arial, sans-serif";
   ctx.lineJoin = "round";
-  ctx.strokeStyle = "rgba(6, 22, 37, 0.9)";
-  ctx.lineWidth = 9;
-  ctx.strokeText("SOLANA FRONTIER", canvas.width / 2, canvas.height / 2 + 8);
-  ctx.strokeStyle = "rgba(218, 239, 255, 0.9)";
-  ctx.lineWidth = 3;
-  ctx.strokeText("SOLANA FRONTIER", canvas.width / 2, canvas.height / 2 + 5);
-
-  const chrome = ctx.createLinearGradient(
-    0,
-    canvas.height * 0.26,
-    0,
-    canvas.height * 0.78,
-  );
-  chrome.addColorStop(0, "#ffffff");
-  chrome.addColorStop(0.22, "#bfe5ff");
-  chrome.addColorStop(0.46, "#4e8db9");
-  chrome.addColorStop(0.62, "#08243b");
-  chrome.addColorStop(0.8, "#d7f0ff");
-  chrome.addColorStop(1, "#ffd25f");
-  ctx.fillStyle = chrome;
-  ctx.fillText("SOLANA FRONTIER", canvas.width / 2, canvas.height / 2 + 5);
+  ctx.strokeStyle = "rgba(15, 0, 24, 0.95)";
+  ctx.lineWidth = 7;
+  ctx.strokeText("PROOF", canvas.width / 2, 36);
+  ctx.strokeText("OF SHIP", canvas.width / 2, 68);
+  ctx.fillStyle = "#fff9ff";
+  ctx.fillText("PROOF", canvas.width / 2, 36);
+  ctx.fillText("OF SHIP", canvas.width / 2, 68);
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.needsUpdate = true;
